@@ -1,0 +1,37 @@
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0px;
+  overflow: hidden;
+}
+
+#canvas {
+  width: 100%;
+  height: 100%;
+  background: #0e0e0e;
+}
+
+.btn {
+  background: unset;
+  color: #c5c5c5;
+  border: none;
+  cursor: pointer;
+}
+
+.tool-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 65px;
+  background: #181818;
+  border-bottom: 1px solid #1c1c1c;
+  display: flex;
+  align-items: center;
+  padding: 0 15px;
+}
+
+#play-pause-btn svg {
+  width: 50px;
+  height: 50px;
+}
