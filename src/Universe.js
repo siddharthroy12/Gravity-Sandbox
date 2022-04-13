@@ -2,9 +2,8 @@ import Vector2 from "./Vector2";
 
 const GRAVITY_CONSTANT = 100.0;
 
-
 function gravity(G, m1, m2, dist) {
-  return (G * m1 * m2) / (dist * dist);
+  return (G * m1 * m2) / ((dist * dist) + 200);
 }
 
 export default class Universe {
