@@ -42,6 +42,15 @@ let SCROLL_SENSITIVITY = 0.0005
 let mousePos = { x: 0, y: 0 };
 let launchStart = mousePos;
 let launchEnd = { x: 0, y: 0 };
+let infoBar;
+
+function updateInfoBar() {
+  infoBar.innerText = `
+    Looking at : ${(cameraOffset.x+'').slice(0, 6)} ${(cameraOffset.y+'').slice(0, 6)}
+    Zoom : ${(cameraZoom+'').slice(0, 4)}
+    Bodies: ${U.bodies.length}
+  `;
+}
 
 function draw() {
   canvas.width = window.innerWidth
@@ -116,6 +125,7 @@ function onPointerUp(e) {
     U.addBody(b, mousePos.x, mousePos.y);
     nextColor = getRandomNiceColor();
     launchStart = mousePos;
+    updateInfoBar();
   }
 }
 
@@ -130,6 +140,7 @@ function onPointerMove(e) {
   if (isDragging) {
     cameraOffset.x = getEventLocation(e).x/cameraZoom - dragStart.x
     cameraOffset.y = getEventLocation(e).y/cameraZoom - dragStart.y
+    updateInfoBar();
   } else {
     launchEnd = { ...mousePos };
   }
@@ -173,6 +184,7 @@ function adjustZoom(zoomAmount, zoomFactor) {
 
     cameraZoom = Math.min( cameraZoom, MAX_ZOOM )
     cameraZoom = Math.max( cameraZoom, MIN_ZOOM )
+    updateInfoBar();
   }
 }
 
@@ -180,6 +192,8 @@ function adjustZoom(zoomAmount, zoomFactor) {
 window.addEventListener('load', () => {
   let playPauseBtn = document.getElementById('play-pause-btn');
   let panAddBtn = document.getElementById('pan-add-btn');
+  let clearBtn = document.getElementById('clear');
+  infoBar = document.getElementById('info-bar');
   canvas = document.getElementById("canvas");
   ctx = canvas.getContext('2d');
 
@@ -213,6 +227,7 @@ window.addEventListener('load', () => {
 
   playPauseBtn.addEventListener('click', pausePlay);
   panAddBtn.addEventListener('click', () => addPan());
+  clearBtn.addEventListener('click', () => { U.clear(); updateInfoBar()});
 
   // Canvas zoop and pan
   canvas.addEventListener('mousedown', onPointerDown)
@@ -226,6 +241,7 @@ window.addEventListener('load', () => {
   // Pause Simulation when focuse change
   window.addEventListener('blur', () => autoPause = true);
   window.addEventListener('focus', () => setTimeout(() => autoPause = false, 100));
+  updateInfoBar();
 
   addPan();
 

@@ -16,6 +16,9 @@ export default class Universe {
     this.bodies.push(b);
   }
 
+  clear() {
+    this.bodies = [];
+  }
 
   update(dt) {
     if (this.bodies.length > 1) {
