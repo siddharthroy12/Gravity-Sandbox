@@ -1,14 +1,18 @@
 import './index.css';
-import Body from './Body';
+import Body, { mass2radius } from './Body';
 import Universe from './Universe';
+import { getRandomNiceColor } from './niceColors';
 
 let autoPause = false;
 let simulationRunning = true;
 let startTime;
 let simulationSpeed = 50;
+let panMode = false;
+let nextColor = getRandomNiceColor();
+let nextMass = 10;
 
 let U = new Universe(100.0);
-U.addBody(new Body(100.0, null, '#ffb40a'), 0, 0);
+U.addBody(new Body(100.0, nextColor), 0, 0);
 let moon = new Body(10);
 moon.velocity.set(0, 10);
 U.addBody(moon, 100, 0);
@@ -33,6 +37,7 @@ let cameraZoom = 1
 let MAX_ZOOM = 5
 let MIN_ZOOM = 0.1
 let SCROLL_SENSITIVITY = 0.0005
+let mousePos = { x: 0, y: 0 };
 
 function draw() {
   canvas.width = window.innerWidth
@@ -43,8 +48,14 @@ function draw() {
   ctx.scale(cameraZoom, cameraZoom)
   ctx.translate( -window.innerWidth / 2 + cameraOffset.x, -window.innerHeight / 2 + cameraOffset.y )
   ctx.clearRect(0,0, window.innerWidth, window.innerHeight)
-  ctx.fillStyle = "black"
   simulation(ctx);
+
+  if (!panMode) {
+    ctx.fillStyle = nextColor
+    ctx.beginPath();
+    ctx.arc(mousePos.x, mousePos.y, mass2radius(nextMass), 0, 2 * Math.PI);
+    ctx.fill();
+  }
 
   requestAnimationFrame(draw);
 }
@@ -63,10 +74,19 @@ let isDragging = false
 let dragStart = { x: 0, y: 0 }
 
 function onPointerDown(e) {
-  isDragging = true
-  dragStart.x = getEventLocation(e).x/cameraZoom - cameraOffset.x
-  dragStart.y = getEventLocation(e).y/cameraZoom - cameraOffset.y
-  canvas.style.cursor = 'move';
+  let x = (getEventLocation(e).x/cameraZoom - cameraOffset.x);
+  let y = (getEventLocation(e).y/cameraZoom - cameraOffset.y);
+
+  if (panMode) {
+    isDragging = true
+    dragStart.x = x;
+    dragStart.y = y;
+    canvas.style.cursor = 'move';
+  } else {
+    let b = new Body(10, nextColor);
+    U.addBody(b, mousePos.x, mousePos.y);
+    nextColor = getRandomNiceColor();
+  }
 }
 
 function onPointerUp() {
@@ -76,7 +96,14 @@ function onPointerUp() {
   canvas.style.cursor = 'default';
 }
 
+function updateMousePosition(e) {
+  mousePos.x = ((getEventLocation(e).x - window.innerWidth/2)/cameraZoom) - (cameraOffset.x - window.innerWidth/2);
+  mousePos.y = ((getEventLocation(e).y - window.innerHeight/2)/cameraZoom) - (cameraOffset.y - window.innerHeight/2);
+}
+
 function onPointerMove(e) {
+  updateMousePosition(e);
+
   if (isDragging) {
     cameraOffset.x = getEventLocation(e).x/cameraZoom - dragStart.x
     cameraOffset.y = getEventLocation(e).y/cameraZoom - dragStart.y

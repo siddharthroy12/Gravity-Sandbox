@@ -6,7 +6,7 @@ function clamp(v, min, max) {
   return Math.min(Math.max(min, v), max);
 }
 
-function mass2radius(mass) {
+export function mass2radius(mass) {
   let f = function(m) {
     return Math.log(m) * 2.0;
   }
@@ -14,9 +14,9 @@ function mass2radius(mass) {
 }
 
 export default class Body {
-  constructor(mass, size, color) {
+  constructor(mass, color) {
     this.mass = mass;
-    this.size = size != null ? size : mass2radius(mass);
+    this.size = mass2radius(mass);
     this.color = color != null ? color : DEFAULT_COLOR;
     this.invMass = 1.0 / mass;
     this.position = new Vector2(0.0, 0.0);
