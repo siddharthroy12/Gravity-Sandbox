@@ -212,7 +212,7 @@ window.addEventListener('load', () => {
   });
 
   playPauseBtn.addEventListener('click', pausePlay);
-  panAddBtn.addEventListener('click', addPan);
+  panAddBtn.addEventListener('click', () => addPan());
 
   // Canvas zoop and pan
   canvas.addEventListener('mousedown', onPointerDown)
