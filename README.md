@@ -38,3 +38,4 @@ It's a web-based simulation so no need to install anything, just visit [the webs
 - Add interesting simulations to load
 - Add merge bodies on collition option
 - Make this into a PWA
+- Make right-click pan
