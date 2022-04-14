@@ -36,3 +36,4 @@ It's a web-based simulation so need to install anything, just visit [the website
 - Add follow the body feature
 - Add saving and loading feature
 - Add interesting simulations to load
+- Add merge bodies on collition option
