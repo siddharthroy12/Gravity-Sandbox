@@ -96,4 +96,5 @@ input[type="range"]::-moz-range-thumb {
   color: #c5c5c5;
   font-size: 12px;
   font-family: monospace;
+  pointer-events: none;
 }
