@@ -1,9 +1,28 @@
-# Gravity Sandbox
+<div align="center">
+  <a href="https://gravity-sandbox.netlify.app/">
+    <img src="screenshots/logo.png" alt="Logo" width="80" height="80">
+  </a>
+
+  <h3 align="center">Gravity Sandbox</h3>
+
+  <p align="center">
+    A Simple, Chaotic Gravity simulator
+    <br />
+    <br />
+    <a href="https://gravity-sandbox.netlify.app/">View Demo</a>
+    ·
+    <a href="https://github.com/siddharthroy12/gravity-sandbox/issues">Report Bug</a>
+    ·
+    <a href="https://github.com/siddharthroy12/gravity-sandbox/issues">Request Feature</a>
+  </p>
+</div>
+
+
 ![](./screenshots/screenshot1.png)
 
 Gravity sandbox is a simple gravity simulator based on Newton's law of universal gravitation.
 
-It's a web-based simulation so you can just visit [the website](https://gravity-sandbox.netlify.app/) to play the game
+It's a web-based simulation so need to install anything, just visit [the website](https://gravity-sandbox.netlify.app/) to play the game
 
 
 ## Controls
