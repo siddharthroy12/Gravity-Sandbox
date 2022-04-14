@@ -269,6 +269,6 @@ window.addEventListener('load', () => {
     pausePlay();
     startTime = (new Date()).getTime();
     draw()
-  }, 100);
+  }, 200);
 });
 
