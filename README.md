@@ -1,20 +1,19 @@
+# Gravity Sandbox
+![](./screenshots/screenshot1.png)
+
+Gravity sandbox is a simple gravity simulator based on Newton's law of universal gravitation.
+
+It's a web-based simulation so you can just visit [the website](https://gravity-sandbox.netlify.app/) to play the game
 
 
-### Summary
+## Controls
 
-A webpack template for the most basic vanillaJS webapp.
+- ![](./screenshots/play-pause-btn.png) To play and pause
+- ![](./screenshots/pan-place-btn.png) To Pan/Place Mode
+- ![](./screenshots/clear-btn.png) To clear the canvas
 
-* Bundles js (with babel transpilation)
-* Bundles all kind of assets (css,images,...)
-* generates an index.html based on the template provided "src/index.html"
-* development and production build scripts
+# Todo
 
-### Set-up
-
-* `npm install`
-* `npm start` for build and dev server
-* `npm run build:dev` for development build
-* `npm run build:prod` for production build
-
-### TODO
-better minify
+- Add follow the body feature
+- Add saving and loading feature
+- Add interesting simulations to load

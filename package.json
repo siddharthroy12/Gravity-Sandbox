@@ -1,7 +1,7 @@
 {
-  "name": "webpack-project",
+  "name": "gravity-sandbox",
   "version": "1.0.0",
-  "description": "",
+  "description": "A chaotic gravity simulator",
   "main": "webpack.common.js",
   "private": true,
   "scripts": {
@@ -10,8 +10,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "webpack-dev-server --config webpack.dev.js --open"
   },
-  "keywords": [],
-  "author": "Maxime Touroute",
+  "keywords": ["simulation", "gravity-simulator", "simulation-game"],
+  "author": "Siddharth Roy",
   "license": "ISC",
   "dependencies": {
   },
