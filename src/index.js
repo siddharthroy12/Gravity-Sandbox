@@ -115,7 +115,7 @@ function onPointerUp(e) {
   if (!panMode) {
     let x = (getEventLocation(e).x/cameraZoom - cameraOffset.x);
     let y = (getEventLocation(e).y/cameraZoom - cameraOffset.y);
-    let b = new Body(10, nextColor);
+    let b = new Body(nextMass, nextColor);
     let v = new Vector2(x - dragStart.x, y - dragStart.y);
     v.x = -v.x
     v.y = -v.y
@@ -193,9 +193,20 @@ window.addEventListener('load', () => {
   let playPauseBtn = document.getElementById('play-pause-btn');
   let panAddBtn = document.getElementById('pan-add-btn');
   let clearBtn = document.getElementById('clear');
+  let massSlider = document.getElementById('mass-slider');
+  let speedSlider = document.getElementById('speed-slider');
+
   infoBar = document.getElementById('info-bar');
   canvas = document.getElementById("canvas");
   ctx = canvas.getContext('2d');
+
+  massSlider.addEventListener('change', (e) => {
+    nextMass = e.target.value;
+  });
+
+  speedSlider.addEventListener('change', (e) => {
+    simulationSpeed = 100 - e.target.value;
+  });
 
   function pausePlay() {
     simulationRunning = !simulationRunning;

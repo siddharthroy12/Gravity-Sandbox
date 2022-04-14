@@ -25,8 +25,6 @@ html, body {
   left: 0;
   right: 0;
   height: 65px;
-  background: #181818;
-  border-bottom: 1px solid #1c1c1c;
   display: flex;
   align-items: center;
   padding: 0 15px;
@@ -40,11 +38,62 @@ html, body {
   width: 50px;
 }
 
+.sliders {
+  position: fixed;
+  top: 10px;
+  right: 10px;
+}
+
+.slider {
+  color: #c5c5c5;
+  position: relative;
+}
+
+.slider label {
+  position: absolute;
+  left: 10px;
+  top: 48%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  font-family: monospace;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+input[type="range"] {
+  appearance: none;
+  background: unset;
+  border: 1px solid #383838;
+  overflow: hidden;
+  height: 25px;
+  outline: none;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  appearance: none;
+  width: 0px;
+  height: 0px;
+  background: unset;
+  box-shadow: -200px 0 0 200px #242424;
+  cursor: pointer;
+}
+
+input[type="range"]::-moz-range-thumb {
+  width: 0px;
+  height: 0px;
+  background: unset;
+  box-shadow: -200px 0 0 200px #242424;
+  cursor: pointer;
+}
+
 .info-bar {
   position: fixed;
   bottom: 5px;
   left: 5px;
   right: 0;
   color: #c5c5c5;
-  font-size: 15px;
+  font-size: 12px;
+  font-family: monospace;
 }

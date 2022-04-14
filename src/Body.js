@@ -2,15 +2,8 @@ import Vector2 from "./Vector2";
 
 const DEFAULT_COLOR = "#4c4cff";
 
-function clamp(v, min, max) {
-  return Math.min(Math.max(min, v), max);
-}
-
 export function mass2radius(mass) {
-  let f = function(m) {
-    return Math.log(m) * 2.0;
-  }
-  return clamp(f(mass), 1, 100);
+  return Math.log(mass) * 2.0;
 }
 
 export default class Body {
