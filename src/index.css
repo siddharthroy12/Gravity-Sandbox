@@ -52,7 +52,7 @@ html, body {
 .slider label {
   position: absolute;
   left: 10px;
-  top: 48%;
+  top: 45%;
   transform: translateY(-50%);
   pointer-events: none;
   font-family: monospace;
