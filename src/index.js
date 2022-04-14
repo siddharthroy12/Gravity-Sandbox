@@ -8,16 +8,20 @@ import Vector2 from './Vector2';
 let autoPause = false;
 let simulationRunning = false;
 let startTime;
-let simulationSpeed = 50;
+let simulationSpeed = 178;
 let panMode = true;
 let nextColor = getRandomNiceColor();
 let nextMass = 10;
 
 let U = new Universe(100.0);
-U.addBody(new Body(100.0, nextColor), 0, 0);
-let moon = new Body(10);
-moon.velocity.set(0, 10);
-U.addBody(moon, 100, 0);
+U.addBody(new Body(1000.0, nextColor), 0, 0);
+let moon1 = new Body(10);
+moon1.velocity.set(0, 30);
+U.addBody(moon1, 100, 0);
+let moon2 = new Body(10);
+moon2.velocity.set(0, -30);
+U.addBody(moon2, -100, 0);
+
 
 function simulation(context) {
   let nowTime = (new Date()).getTime();
@@ -49,6 +53,7 @@ function updateInfoBar() {
     Looking at : ${(cameraOffset.x+'').slice(0, 6)} ${(cameraOffset.y+'').slice(0, 6)}
     Zoom : ${(cameraZoom+'').slice(0, 4)}
     Bodies: ${U.bodies.length}
+    Speed : ${simulationSpeed} (Less is faster)
   `;
 }
 
@@ -206,7 +211,10 @@ window.addEventListener('load', () => {
 
   speedSlider.addEventListener('change', (e) => {
     simulationSpeed = 100 - e.target.value;
+    updateInfoBar();
   });
+
+  speedSlider.value = 99 - simulationSpeed;
 
   function pausePlay() {
     simulationRunning = !simulationRunning;

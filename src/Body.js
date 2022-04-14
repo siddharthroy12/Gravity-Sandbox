@@ -1,9 +1,10 @@
 import Vector2 from "./Vector2";
 
 const DEFAULT_COLOR = "#4c4cff";
+const TAIL_SIZE = 50;
 
 export function mass2radius(mass) {
-  return Math.log(mass) * 2.0;
+  return Math.log(mass) * 3.0;
 }
 
 export default class Body {
@@ -29,7 +30,7 @@ export default class Body {
 
     this.forceAccumulator.set(0, 0);
 
-    if (this.previousStates.length > 100) {
+    if (this.previousStates.length > TAIL_SIZE) {
       this.previousStates.shift();
     }
 
