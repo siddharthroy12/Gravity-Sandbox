@@ -6,7 +6,7 @@
   <h3 align="center">Gravity Sandbox</h3>
 
   <p align="center">
-    A Simple, Chaotic Gravity simulator
+    A simple, chaotic gravity simulator
     <br />
     <br />
     <a href="https://gravity-sandbox.netlify.app/">View Demo</a>
@@ -22,7 +22,7 @@
 
 Gravity sandbox is a simple gravity simulator based on Newton's law of universal gravitation.
 
-It's a web-based simulation so need to install anything, just visit [the website](https://gravity-sandbox.netlify.app/) to play the game
+It's a web-based simulation so no need to install anything, just visit [the website](https://gravity-sandbox.netlify.app/) to play the game
 
 
 ## Controls
