@@ -8,7 +8,7 @@ import Vector2 from './Vector2';
 let autoPause = false;
 let simulationRunning = false;
 let startTime;
-let simulationSpeed = 178;
+let simulationSpeed = 44;
 let panMode = true;
 let nextColor = getRandomNiceColor();
 let nextMass = 10;
@@ -16,11 +16,12 @@ let nextMass = 10;
 let U = new Universe(100.0);
 U.addBody(new Body(1000.0, nextColor), 0, 0);
 let moon1 = new Body(10);
-moon1.velocity.set(0, 30);
-U.addBody(moon1, 100, 0);
+moon1.velocity.set(0, 20);
+U.addBody(moon1, 200, 0);
 let moon2 = new Body(10);
-moon2.velocity.set(0, -30);
-U.addBody(moon2, -100, 0);
+moon2.velocity.set(0, -20);
+U.addBody(moon2, -200, 0);
+
 
 
 function simulation(context) {
