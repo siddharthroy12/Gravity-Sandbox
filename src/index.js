@@ -73,6 +73,7 @@ function draw() {
   if (bodyToFollow) {
     cameraOffset.x = -(bodyToFollow.position.x - window.innerWidth/2);
     cameraOffset.y = -(bodyToFollow.position.y - window.innerHeight/2);
+    updateInfoBar();
   }
 
   // Draw the preview of body at mouse location
