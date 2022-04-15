@@ -22,8 +22,6 @@ let moon2 = new Body(10);
 moon2.velocity.set(0, -20);
 U.addBody(moon2, -200, 0);
 
-
-
 function simulation(context) {
   let nowTime = (new Date()).getTime();
   let time = (nowTime - startTime);
@@ -69,7 +67,7 @@ function draw() {
   ctx.clearRect(0,0, window.innerWidth, window.innerHeight)
   simulation(ctx);
 
-  if (!panMode) {
+  if (true) {
     ctx.fillStyle = nextColor
     ctx.beginPath();
     ctx.arc(mousePos.x, mousePos.y, mass2radius(nextMass), 0, 2 * Math.PI);
@@ -104,7 +102,7 @@ function onPointerDown(e) {
   dragStart.x = x;
   dragStart.y = y;
 
-  if (panMode) {
+  if (panMode && e.button === 0 || (!panMode && e.button === 2)) {
     isDragging = true
     canvas.style.cursor = 'move';
   } else {
@@ -113,12 +111,13 @@ function onPointerDown(e) {
 }
 
 function onPointerUp(e) {
+  console.log(e);
   isDragging = false
   initialPinchDistance = null
   lastZoom = cameraZoom
   canvas.style.cursor = 'default';
 
-  if (!panMode) {
+  if ((!panMode && e.button !== 2) || (panMode && e.button === 2)) {
     let x = (getEventLocation(e).x/cameraZoom - cameraOffset.x);
     let y = (getEventLocation(e).y/cameraZoom - cameraOffset.y);
     let b = new Body(nextMass, nextColor);
