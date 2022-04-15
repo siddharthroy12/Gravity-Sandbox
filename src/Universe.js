@@ -16,6 +16,20 @@ export default class Universe {
     this.bodies.push(b);
   }
 
+  getBodyByPoint(x, y) {
+    let result = null;
+    this.bodies.forEach(body => {
+      const pointVector = new Vector2(x, y);
+      pointVector.subtract(body.position);
+      const length = pointVector.length();
+      if (body.size > length) {
+        result =  body;
+      }
+    })
+
+    return result;
+  }
+
   clear() {
     this.bodies = [];
   }

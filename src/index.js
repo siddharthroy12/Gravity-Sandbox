@@ -12,6 +12,7 @@ let simulationSpeed = 44;
 let panMode = true;
 let nextColor = getRandomNiceColor();
 let nextMass = 10;
+let bodyToFollow = null;
 
 let U = new Universe(100.0);
 U.addBody(new Body(1000.0, nextColor), 0, 0);
@@ -47,7 +48,6 @@ let launchStart = mousePos;
 let launchEnd = { x: 0, y: 0 };
 let infoBar;
 
-
 // The bottom left section
 function updateInfoBar() {
   infoBar.innerText = `
@@ -59,15 +59,21 @@ function updateInfoBar() {
 }
 
 function draw() {
-  canvas.width = window.innerWidth
-  canvas.height = window.innerHeight
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
 
   // Translate to the canvas centre before zooming - so you'll always zoom on what you're looking directly at
-  ctx.translate( window.innerWidth / 2, window.innerHeight / 2 )
-  ctx.scale(cameraZoom, cameraZoom)
-  ctx.translate( -window.innerWidth / 2 + cameraOffset.x, -window.innerHeight / 2 + cameraOffset.y )
-  ctx.clearRect(0,0, window.innerWidth, window.innerHeight)
+  ctx.translate( window.innerWidth / 2, window.innerHeight / 2 );
+  ctx.scale(cameraZoom, cameraZoom);
+  ctx.translate( -window.innerWidth / 2 + cameraOffset.x, -window.innerHeight / 2 + cameraOffset.y );
+  ctx.clearRect(0,0, window.innerWidth, window.innerHeight);
+
   simulation(ctx);
+
+  if (bodyToFollow) {
+    cameraOffset.x = -(bodyToFollow.position.x - window.innerWidth/2);
+    cameraOffset.y = -(bodyToFollow.position.y - window.innerHeight/2);
+  }
 
   // Draw the preview of body at mouse location
   ctx.fillStyle = nextColor
@@ -105,6 +111,7 @@ function onPointerDown(e) {
   dragStart.y = y;
 
   if (panMode && e.button === 0 || (!panMode && e.button === 2)) {
+    bodyToFollow = U.getBodyByPoint(mousePos.x, mousePos.y);
     isDragging = true
     canvas.style.cursor = 'move';
   } else {

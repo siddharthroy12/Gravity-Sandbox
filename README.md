@@ -31,10 +31,10 @@ It's a web-based simulation so no need to install anything, just visit
 - ![play/pause button](./screenshots/play-pause-btn.png) To play and pause
 - ![pan/place button](./screenshots/pan-place-btn.png) To Pan/Place Mode
 - ![clear button](./screenshots/clear-btn.png) To clear the canvas
+- Click on the body while in pan mode to follow
 
 # Todo
 
-- Add follow the body feature
 - Add saving and loading feature
 - Add interesting simulations to load
 - Add merge bodies on collition option
