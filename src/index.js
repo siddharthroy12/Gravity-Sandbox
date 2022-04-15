@@ -47,6 +47,8 @@ let launchStart = mousePos;
 let launchEnd = { x: 0, y: 0 };
 let infoBar;
 
+
+// The bottom left section
 function updateInfoBar() {
   infoBar.innerText = `
     Looking at : ${(cameraOffset.x+'').slice(0, 6)} ${(cameraOffset.y+'').slice(0, 6)}
@@ -67,18 +69,18 @@ function draw() {
   ctx.clearRect(0,0, window.innerWidth, window.innerHeight)
   simulation(ctx);
 
-  if (true) {
-    ctx.fillStyle = nextColor
-    ctx.beginPath();
-    ctx.arc(mousePos.x, mousePos.y, mass2radius(nextMass), 0, 2 * Math.PI);
-    ctx.fill();
-    ctx.strokeStyle = nextColor;
+  // Draw the preview of body at mouse location
+  ctx.fillStyle = nextColor
+  ctx.beginPath();
+  ctx.arc(mousePos.x, mousePos.y, mass2radius(nextMass), 0, 2 * Math.PI);
+  ctx.fill();
+  ctx.strokeStyle = nextColor;
 
-    ctx.beginPath();
-    ctx.moveTo(launchStart.x, launchStart.y);
-    ctx.lineTo(launchEnd.x, launchEnd.y);
-    ctx.stroke();
-  }
+  // Draw line of drag when placing
+  ctx.beginPath();
+  ctx.moveTo(launchStart.x, launchStart.y);
+  ctx.lineTo(launchEnd.x, launchEnd.y);
+  ctx.stroke();
 
   requestAnimationFrame(draw);
 }
@@ -111,7 +113,6 @@ function onPointerDown(e) {
 }
 
 function onPointerUp(e) {
-  console.log(e);
   isDragging = false
   initialPinchDistance = null
   lastZoom = cameraZoom
@@ -124,8 +125,8 @@ function onPointerUp(e) {
     let v = new Vector2(x - dragStart.x, y - dragStart.y);
     v.x = -v.x
     v.y = -v.y
-    v.x *= 0.5;
-    v.y *= 0.5;
+    v.x *= 0.2;
+    v.y *= 0.2;
     b.velocity.add(v);
     U.addBody(b, mousePos.x, mousePos.y);
     nextColor = getRandomNiceColor();
