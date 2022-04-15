@@ -26,7 +26,6 @@ export default class Universe {
       // two bodies to do this, of course.
       for (let i = 1; i < this.bodies.length; i++) {
         for (let j = i - 1; j >= 0; j--) {
-          // TODO: Express this way clearer
           let b1 = this.bodies[i];
           let b2 = this.bodies[j];
           let forceMagnitude = gravity(GRAVITY_CONSTANT, b1.mass, b2.mass, b1.distance(b2));

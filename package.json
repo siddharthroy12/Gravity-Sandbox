@@ -10,10 +10,15 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "webpack-dev-server --config webpack.dev.js --open"
   },
-  "keywords": ["simulation", "gravity-simulator", "simulation-game"],
+  "keywords": [
+    "simulation",
+    "gravity-simulator",
+    "simulation-game"
+  ],
   "author": "Siddharth Roy",
   "license": "ISC",
   "dependencies": {
+    "workbox-webpack-plugin": "^6.5.3"
   },
   "devDependencies": {
     "@babel/core": "^7.1.6",
