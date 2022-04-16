@@ -38,4 +38,3 @@ It's a web-based simulation so no need to install anything, just visit
 - Add saving and loading feature
 - Add interesting simulations to load
 - Add merge bodies on collition option
-- Make this into a PWA

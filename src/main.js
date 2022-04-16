@@ -1,5 +1,5 @@
-// This is a mess, needs refactoring
-import './index.css';
+import './style.css'
+
 import Body, { mass2radius } from './Body';
 import Universe from './Universe';
 import { getRandomNiceColor } from './niceColors';
@@ -210,14 +210,6 @@ function adjustZoom(zoomAmount, zoomFactor) {
 
 
 window.addEventListener('load', () => {
-  // Register serviceWorker for offline support
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('/service-worker.js').then(registration => {
-      console.log('SW registered: ', registration);
-    }).catch(registrationError => {
-      console.log('SW registration failed: ', registrationError);
-    });
-  }
   let playPauseBtn = document.getElementById('play-pause-btn');
   let panAddBtn = document.getElementById('pan-add-btn');
   let clearBtn = document.getElementById('clear');
