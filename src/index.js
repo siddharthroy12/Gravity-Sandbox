@@ -263,7 +263,7 @@ window.addEventListener('load', () => {
 
   playPauseBtn.addEventListener('click', pausePlay);
   panAddBtn.addEventListener('click', () => addPan());
-  clearBtn.addEventListener('click', () => { U.clear(); updateInfoBar()});
+  clearBtn.addEventListener('click', () => { U.clear(); updateInfoBar(); bodyToFollow = null });
 
   // Canvas zoop and pan
   canvas.addEventListener('mousedown', onPointerDown)
