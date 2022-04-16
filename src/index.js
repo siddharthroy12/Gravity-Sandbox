@@ -43,9 +43,9 @@ let cameraZoom = 1
 let MAX_ZOOM = 5
 let MIN_ZOOM = 0.1
 let SCROLL_SENSITIVITY = 0.0005
-let mousePos = { x: 0, y: 0 };
+let mousePos = { x: 0, y: 0 }; // In 2d world
+let mousePosInViewport = { x: 0, y: 0 };
 let launchStart = mousePos;
-let launchEnd = { x: 0, y: 0 };
 let infoBar;
 
 // The bottom left section
@@ -76,6 +76,8 @@ function draw() {
     updateInfoBar();
   }
 
+  updateMousePosition();
+
   // Draw the preview of body at mouse location
   ctx.fillStyle = nextColor
   ctx.beginPath();
@@ -86,7 +88,7 @@ function draw() {
   // Draw line of drag when placing
   ctx.beginPath();
   ctx.moveTo(launchStart.x, launchStart.y);
-  ctx.lineTo(launchEnd.x, launchEnd.y);
+  ctx.lineTo(mousePos.x, mousePos.y);
   ctx.stroke();
 
   requestAnimationFrame(draw);
@@ -143,20 +145,24 @@ function onPointerUp(e) {
   }
 }
 
-function updateMousePosition(e) {
-  mousePos.x = ((getEventLocation(e).x - window.innerWidth/2)/cameraZoom) - (cameraOffset.x - window.innerWidth/2);
-  mousePos.y = ((getEventLocation(e).y - window.innerHeight/2)/cameraZoom) - (cameraOffset.y - window.innerHeight/2);
+function updateMousePosition() {
+  mousePos.x = ((mousePosInViewport.x - window.innerWidth/2)/cameraZoom) - (cameraOffset.x - window.innerWidth/2);
+  mousePos.y = ((mousePosInViewport.y - window.innerHeight/2)/cameraZoom) - (cameraOffset.y - window.innerHeight/2);
+}
+
+function updateMousePositionInViewport(e) {
+  mousePosInViewport.x = getEventLocation(e).x;
+  mousePosInViewport.y = getEventLocation(e).y;
 }
 
 function onPointerMove(e) {
-  updateMousePosition(e);
+  updateMousePositionInViewport(e);
+  updateMousePosition();
 
   if (isDragging) {
     cameraOffset.x = getEventLocation(e).x/cameraZoom - dragStart.x
     cameraOffset.y = getEventLocation(e).y/cameraZoom - dragStart.y
     updateInfoBar();
-  } else {
-    launchEnd = { ...mousePos };
   }
 }
 
