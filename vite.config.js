@@ -1,6 +1,12 @@
-import { VitePWA } from 'vite-plugin-pwa'
 import { defineConfig } from 'vite'
 export default defineConfig({
-  plugins: [
-  ]    
+  build: {
+    rollupOptions: {
+      output: {
+        entryFileNames: `assets/[name].js`,
+        chunkFileNames: `assets/[name].js`,
+        assetFileNames: `assets/[name].[ext]`
+      }
+    }
+  }
 })
