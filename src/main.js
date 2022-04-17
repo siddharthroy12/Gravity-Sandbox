@@ -168,6 +168,7 @@ function onPointerMove(e) {
 
 function handleTouch(e, singleTouchHandler) {
   if (e.touches.length == 1) {
+    e.button = 0;
     singleTouchHandler(e)
   } else if (e.type == "touchmove" && e.touches.length == 2) {
     isDragging = false
