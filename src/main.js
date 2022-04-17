@@ -13,6 +13,7 @@ let panMode = true;
 let nextColor = getRandomNiceColor();
 let nextMass = 10;
 let bodyToFollow = null;
+let isTouchDevice = false;
 
 let U = new Universe(100.0);
 U.addBody(new Body(1000.0, nextColor), 0, 0);
@@ -46,6 +47,7 @@ let SCROLL_SENSITIVITY = 0.0005
 let mousePos = { x: 0, y: 0 }; // In 2d world
 let mousePosInViewport = { x: 0, y: 0 };
 let launchStart = mousePos;
+let launching = false;
 let infoBar;
 
 // The bottom left section
@@ -78,18 +80,20 @@ function draw() {
 
   updateMousePosition();
 
-  // Draw the preview of body at mouse location
-  ctx.fillStyle = nextColor
-  ctx.beginPath();
-  ctx.arc(mousePos.x, mousePos.y, mass2radius(nextMass), 0, 2 * Math.PI);
-  ctx.fill();
-  ctx.strokeStyle = nextColor;
+  if (launching) {
+    // Draw the preview of body at mouse location
+    ctx.fillStyle = nextColor
+    ctx.beginPath();
+    ctx.arc(mousePos.x, mousePos.y, mass2radius(nextMass), 0, 2 * Math.PI);
+    ctx.fill();
+    ctx.strokeStyle = nextColor;
 
-  // Draw line of drag when placing
-  ctx.beginPath();
-  ctx.moveTo(launchStart.x, launchStart.y);
-  ctx.lineTo(mousePos.x, mousePos.y);
-  ctx.stroke();
+    // Draw line of drag when placing
+    ctx.beginPath();
+    ctx.moveTo(launchStart.x, launchStart.y);
+    ctx.lineTo(mousePos.x, mousePos.y);
+    ctx.stroke();
+  }
 
   requestAnimationFrame(draw);
 }
@@ -118,19 +122,27 @@ function onPointerDown(e) {
     isDragging = true
     canvas.style.cursor = 'move';
   } else {
-    launchStart = { ...mousePos };
+    updateMousePositionInViewport(e);
+    updateMousePosition();
+
+    launchStart = {
+      x: ((getEventLocation(e).x - window.innerWidth/2)/cameraZoom) - (cameraOffset.x - window.innerWidth/2),
+      y: ((getEventLocation(e).y - window.innerHeight/2)/cameraZoom) - (cameraOffset.y - window.innerHeight/2),
+    };
+    launching = true;
   }
 }
 
 function onPointerUp(e) {
+  console.log(e)
   isDragging = false
   initialPinchDistance = null
   lastZoom = cameraZoom
   canvas.style.cursor = 'default';
 
   if ((!panMode && e.button !== 2) || (panMode && e.button === 2)) {
-    let x = (getEventLocation(e).x/cameraZoom - cameraOffset.x);
-    let y = (getEventLocation(e).y/cameraZoom - cameraOffset.y);
+    let x = (mousePosInViewport.x/cameraZoom - cameraOffset.x);
+    let y = (mousePosInViewport.y/cameraZoom - cameraOffset.y);
     let b = new Body(nextMass, nextColor);
     let v = new Vector2(x - dragStart.x, y - dragStart.y);
     v.x = -v.x
@@ -142,6 +154,7 @@ function onPointerUp(e) {
     nextColor = getRandomNiceColor();
     launchStart = mousePos;
     updateInfoBar();
+    launching = false;
   }
 }
 
@@ -167,7 +180,7 @@ function onPointerMove(e) {
 }
 
 function handleTouch(e, singleTouchHandler) {
-  if (e.touches.length == 1) {
+  if (e.touches.length <= 1) {
     e.button = 0;
     singleTouchHandler(e)
   } else if (e.type == "touchmove" && e.touches.length == 2) {
@@ -265,12 +278,12 @@ window.addEventListener('load', () => {
   clearBtn.addEventListener('click', () => { U.clear(); updateInfoBar(); bodyToFollow = null });
 
   // Canvas zoop and pan
-  canvas.addEventListener('mousedown', onPointerDown)
-  canvas.addEventListener('touchstart', (e) => handleTouch(e, onPointerDown))
-  canvas.addEventListener('mouseup', onPointerUp)
-  canvas.addEventListener('touchend',  (e) => handleTouch(e, onPointerUp))
+  canvas.addEventListener('mousedown', (e) => { if (!isTouchDevice) { onPointerDown(e) }})
+  canvas.addEventListener('touchstart', (e) => { handleTouch(e, onPointerDown); console.log('touch start'); isTouchDevice = true })
+  canvas.addEventListener('mouseup', (e) => { if (!isTouchDevice) { onPointerUp(e) }})
+  canvas.addEventListener('touchend',  (e) => { handleTouch(e, onPointerUp); console.log('touch end') })
   canvas.addEventListener('mousemove', onPointerMove)
-  canvas.addEventListener('touchmove', (e) => handleTouch(e, onPointerMove))
+  canvas.addEventListener('touchmove', (e) => { handleTouch(e, onPointerMove); console.log('touch move') })
   canvas.addEventListener( 'wheel', (e) => adjustZoom(e.deltaY*SCROLL_SENSITIVITY))
 
   // Pause Simulation when focuse change

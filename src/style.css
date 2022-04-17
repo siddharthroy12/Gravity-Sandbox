@@ -109,3 +109,13 @@ input[type="range"]::-moz-range-thumb {
   font-size: 12px;
   font-family: monospace;
 }
+
+@media screen and (max-width: 500px) {
+  .info-bar {
+    bottom: 20px;
+  }
+  .links {
+    left: 5px;
+    text-align: left;
+  }
+}
