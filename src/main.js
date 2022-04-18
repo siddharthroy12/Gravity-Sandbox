@@ -4,6 +4,9 @@ import Body, { mass2radius } from './Body';
 import Universe from './Universe';
 import { getRandomNiceColor } from './niceColors';
 import Vector2 from './Vector2';
+import {
+  pattern1, pattern2, pattern3, pattern4
+} from './patterns';
 
 let autoPause = false;
 let simulationRunning = false;
@@ -16,13 +19,7 @@ let bodyToFollow = null;
 let isTouchDevice = false;
 
 let U = new Universe(100.0);
-U.addBody(new Body(1000.0, nextColor), 0, 0);
-let moon1 = new Body(10);
-moon1.velocity.set(0, 20);
-U.addBody(moon1, 200, 0);
-let moon2 = new Body(10);
-moon2.velocity.set(0, -20);
-U.addBody(moon2, -200, 0);
+pattern1(U);
 
 function simulation(context) {
   let nowTime = (new Date()).getTime();
@@ -53,7 +50,7 @@ let infoBar;
 // The bottom left section
 function updateInfoBar() {
   infoBar.innerText = `
-    Looking at : ${(cameraOffset.x+'').slice(0, 6)} ${(cameraOffset.y+'').slice(0, 6)}
+    Looking at : ${(cameraOffset.x+'').slice(0, 7)} ${(cameraOffset.y+'').slice(0, 7)}
     Zoom : ${(cameraZoom+'').slice(0, 4)}
     Bodies: ${U.bodies.length}
     Speed : ${simulationSpeed} (Less is faster)
@@ -134,7 +131,6 @@ function onPointerDown(e) {
 }
 
 function onPointerUp(e) {
-  console.log(e)
   isDragging = false
   initialPinchDistance = null
   lastZoom = cameraZoom
@@ -227,8 +223,47 @@ window.addEventListener('load', () => {
   let playPauseBtn = document.getElementById('play-pause-btn');
   let panAddBtn = document.getElementById('pan-add-btn');
   let clearBtn = document.getElementById('clear');
+
   let massSlider = document.getElementById('mass-slider');
   let speedSlider = document.getElementById('speed-slider');
+
+
+  let setOrbit = document.getElementById('set-orbit');
+  let setGrid = document.getElementById('set-grid');
+  let setInfinity = document.getElementById('set-infinity');
+  let setCircle = document.getElementById('set-circle');
+
+  setOrbit.addEventListener('click', () => {
+    const [zoom, speed] = pattern1(U);
+    cameraZoom = zoom;
+    simulationSpeed = speed;
+    cameraOffset = { x: window.innerWidth/2, y: window.innerHeight/2 }
+    updateInfoBar();
+  });
+
+  setGrid.addEventListener('click', () => {
+    const [zoom, speed] = pattern2(U);
+    cameraZoom = zoom;
+    simulationSpeed = speed;
+    updateInfoBar();
+    cameraOffset = { x: window.innerWidth/2, y: window.innerHeight/2 }
+  });
+
+  setInfinity.addEventListener('click', () => {
+    const [zoom, speed] = pattern3(U);
+    cameraZoom = zoom;
+    simulationSpeed = speed;
+    updateInfoBar();
+    cameraOffset = { x: window.innerWidth/2, y: window.innerHeight/2 }
+  });
+
+  setCircle.addEventListener('click', () => {
+    const [zoom, speed] = pattern4(U);
+    cameraZoom = zoom;
+    simulationSpeed = speed;
+    updateInfoBar();
+    cameraOffset = { x: window.innerWidth/2, y: window.innerHeight/2 }
+  });
 
   infoBar = document.getElementById('info-bar');
   canvas = document.getElementById("canvas");
@@ -279,11 +314,11 @@ window.addEventListener('load', () => {
 
   // Canvas zoop and pan
   canvas.addEventListener('mousedown', (e) => { if (!isTouchDevice) { onPointerDown(e) }})
-  canvas.addEventListener('touchstart', (e) => { handleTouch(e, onPointerDown); console.log('touch start'); isTouchDevice = true })
+  canvas.addEventListener('touchstart', (e) => { handleTouch(e, onPointerDown); isTouchDevice = true })
   canvas.addEventListener('mouseup', (e) => { if (!isTouchDevice) { onPointerUp(e) }})
-  canvas.addEventListener('touchend',  (e) => { handleTouch(e, onPointerUp); console.log('touch end') })
+  canvas.addEventListener('touchend',  (e) => { handleTouch(e, onPointerUp) })
   canvas.addEventListener('mousemove', onPointerMove)
-  canvas.addEventListener('touchmove', (e) => { handleTouch(e, onPointerMove); console.log('touch move') })
+  canvas.addEventListener('touchmove', (e) => { handleTouch(e, onPointerMove) })
   canvas.addEventListener( 'wheel', (e) => adjustZoom(e.deltaY*SCROLL_SENSITIVITY))
 
   // Pause Simulation when focuse change

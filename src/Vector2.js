@@ -56,6 +56,13 @@ export default class Vector2 {
     this.y /= length;
   }
 
+  rotate(angle) {
+    const resultX = this.x * Math.cos(angle) - this.y * Math.sin(angle)
+    const resultY = this.x * Math.sin(angle) + this.y * Math.cos(angle)
+    this.x = resultX;
+    this.y = resultY;
+  }
+
 }
 
 
