@@ -10,7 +10,7 @@ html,
 body,
 a,
 .btn {
-  color: #c5c5c5;
+  color: #fff;
 }
 
 #canvas {
@@ -23,20 +23,57 @@ a,
   background: unset;
   border: none;
   cursor: pointer;
+  border: 1px solid #383838;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 5px;
 }
 
 .tool-bar {
   position: fixed;
-  top: 0;
+  top: 11px;
   left: 0;
   height: 65px;
-  display: flex;
-  align-items: center;
   padding: 0 15px;
 }
 
 #play-pause-btn svg {
   height: 40px;
+}
+
+#box-btn {
+  position: relative;
+}
+
+#box {
+  display: none;
+  position: absolute;
+  border: 1px solid #383838;
+  border-bottom: none;
+  width: 100px;
+  right: 0px;
+  top: -1px;
+  transform: translate(100%);
+}
+
+#box-btn:hover #box {
+  display: block;
+}
+
+#box button {
+  background-color: unset;
+  color: #fff;
+  border: none;
+  width: 100%;
+  text-align: start;
+  font-size: 12px;
+  padding: 5px;
+  padding-left: 10px;
+  font-family: monospace;
+  border-bottom: 1px solid #383838;
 }
 
 .btn svg {
@@ -108,4 +145,14 @@ input[type="range"]::-moz-range-thumb {
   right: 5px;
   font-size: 12px;
   font-family: monospace;
+}
+
+@media screen and (max-width: 500px) {
+  .info-bar {
+    bottom: 20px;
+  }
+  .links {
+    left: 5px;
+    text-align: left;
+  }
 }

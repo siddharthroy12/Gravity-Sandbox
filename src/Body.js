@@ -1,6 +1,6 @@
 import Vector2 from "./Vector2";
+import { getRandomNiceColor } from './niceColors';
 
-const DEFAULT_COLOR = "#4c4cff";
 const TAIL_SIZE = 50;
 
 export function mass2radius(mass) {
@@ -11,7 +11,7 @@ export default class Body {
   constructor(mass, color) {
     this.mass = mass;
     this.size = mass2radius(mass);
-    this.color = color != null ? color : DEFAULT_COLOR;
+    this.color = color != null ? color : getRandomNiceColor();
     this.invMass = 1.0 / mass;
     this.position = new Vector2(0.0, 0.0);
     this.velocity = new Vector2(0.0, 0.0);
