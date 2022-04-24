@@ -20,18 +20,13 @@ export function pattern1(U) {
 export function pattern2(U) {
   U.clear();
 
-  U.addBody(new Body(1000), 0, 400);
-  U.addBody(new Body(1000), 0, -400);
-  U.addBody(new Body(1000), 400, 0);
-  U.addBody(new Body(1000), -400, 0);
-
-  for (let i = -2.5; i <= 2.5; i++) {
-    for (let j = -2.5; j <= 2.5; j++) {
+  for (let i = -5.5; i <= 5.5; i++) {
+    for (let j = -5.5; j <= 5.5; j++) {
       U.addBody(new Body(10), i * 60, j * 60);
     }
   }
 
-  return [0.78, 199];
+  return [0.78, 200];
 }
 
 // INFINITY

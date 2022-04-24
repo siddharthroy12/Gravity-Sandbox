@@ -32,8 +32,3 @@ It's a web-based simulation so no need to install anything, just visit
 - ![pan/place button](./screenshots/pan-place-btn.png) To Pan/Place Mode
 - ![clear button](./screenshots/clear-btn.png) To clear the canvas
 - Click on the body while in pan mode to follow
-
-# Todo
-
-- Add saving and loading feature
-- Add interesting simulations to load
