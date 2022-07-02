@@ -22,7 +22,7 @@ self.addEventListener('install', function(e) {
 self.addEventListener("activate", event => {
   event.waitUntil(caches.keys().then((keyList) => {
     return Promise.all(keyList.map((key) => {
-      if (key === cacheName) { return; }
+      if (key === version) { return; }
       return caches.delete(key);
     }))
   }));
