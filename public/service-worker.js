@@ -3,11 +3,7 @@ const version = '1.1.2';
 const contentToCache = [
   '/',
   '/index.html',
-  '/manifest.json',
-  '/robot.txt',
-  '/registerSW.js',
   '/apple-touch-icon.png',
-  '/service-worker.js',
   '/android-chrome-192x192.png',
   '/android-chrome-512x512.png',
   '/assets/favicon.ico',
