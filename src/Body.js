@@ -12,33 +12,23 @@ export default class Body {
     this.mass = mass;
     this.size = mass2radius(mass);
     this.color = color != null ? color : getRandomNiceColor();
-    this.invMass = 1.0 / mass;
     this.position = new Vector2(0.0, 0.0);
     this.velocity = new Vector2(0.0, 0.0);
-    this.forceAccumulator = new Vector2(0.0, 0.0);
     this.previousStates = [];
+    this.dead = false;
   }
 
-  integrate(dt) {
-    let scaledForce = new Vector2(this.forceAccumulator.x, this.forceAccumulator.y);
-    scaledForce.scale(dt * this.invMass);
-    this.velocity.add(scaledForce)
-
-    let scaledVelocity = new Vector2(this.velocity.x, this.velocity.y);
-    scaledVelocity.scale(dt);
-    this.position.add(scaledVelocity);
-
-    this.forceAccumulator.set(0, 0);
+  update(dt, showTail = true) {
+    this.position.x += this.velocity.x * dt;
+    this.position.y += this.velocity.y * dt;
 
     if (this.previousStates.length > TAIL_SIZE) {
       this.previousStates.shift();
     }
 
-    this.previousStates.push({ ...this.position });
-  }
-
-  applyForce(f) {
-    this.forceAccumulator.add(f);
+    if (showTail) {
+      this.previousStates.push({ ...this.position });
+    }
   }
 
   distanceSquared(b) {
@@ -71,5 +61,3 @@ export default class Body {
     }
   }
 }
-
-

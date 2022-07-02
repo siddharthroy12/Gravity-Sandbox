@@ -1,3 +1,7 @@
+// TODO:
+// - Add option to hide tail
+// - Add tool tip
+// - Fix Offline cache not updating
 import './style.css'
 
 import Body, { mass2radius } from './Body';
@@ -5,7 +9,7 @@ import Universe from './Universe';
 import { getRandomNiceColor } from './niceColors';
 import Vector2 from './Vector2';
 import {
-  pattern1, pattern2, pattern3, pattern4
+  orbit, grid, infinity, circle, square, sinewave
 } from './patterns';
 
 let autoPause = false;
@@ -19,7 +23,8 @@ let bodyToFollow = null;
 let isTouchDevice = false;
 
 let U = new Universe(100.0);
-pattern1(U);
+// Default pattern
+orbit(U);
 
 function simulation(context) {
   let nowTime = (new Date()).getTime();
@@ -36,13 +41,13 @@ function simulation(context) {
 let canvas;
 let ctx;
 
-let cameraOffset = { x: window.innerWidth/2, y: window.innerHeight/2 }
-let cameraZoom = 1
-let MAX_ZOOM = 5
-let MIN_ZOOM = 0.1
-let SCROLL_SENSITIVITY = 0.0005
-let mousePos = { x: 0, y: 0 }; // In 2d world
-let mousePosInViewport = { x: 0, y: 0 };
+let cameraOffset = { x: window.innerWidth/2, y: window.innerHeight/2 };
+let cameraZoom = 1;
+let MAX_ZOOM = 5;
+let MIN_ZOOM = 0.1;
+let SCROLL_SENSITIVITY = 0.0005;
+let mousePos = { x: 0, y: 0 }; // Inside 2d world
+let mousePosInViewport = { x: 0, y: 0 }; // Inside window
 let launchStart = mousePos;
 let launching = false;
 let infoBar;
@@ -220,50 +225,38 @@ function adjustZoom(zoomAmount, zoomFactor) {
 
 
 window.addEventListener('load', () => {
-  let playPauseBtn = document.getElementById('play-pause-btn');
-  let panAddBtn = document.getElementById('pan-add-btn');
-  let clearBtn = document.getElementById('clear');
+  const playPauseBtn = document.getElementById('play-pause-btn');
+  const panAddBtn = document.getElementById('pan-add-btn');
+  const clearBtn = document.getElementById('clear');
 
-  let massSlider = document.getElementById('mass-slider');
-  let speedSlider = document.getElementById('speed-slider');
+  const massSlider = document.getElementById('mass-slider');
+  const speedSlider = document.getElementById('speed-slider');
 
+  const setOrbit = document.getElementById('set-orbit');
+  const setGrid = document.getElementById('set-grid');
+  const setInfinity = document.getElementById('set-infinity');
+  const setCircle = document.getElementById('set-circle');
+  const setSquare = document.getElementById('set-square');
+  const setSinewave = document.getElementById('set-sinewave');
 
-  let setOrbit = document.getElementById('set-orbit');
-  let setGrid = document.getElementById('set-grid');
-  let setInfinity = document.getElementById('set-infinity');
-  let setCircle = document.getElementById('set-circle');
+  function setPattern(pattern) {
+    return () => {
+      U.clear();
+      const [zoom, speed] = pattern(U);
+      cameraZoom = zoom;
+      simulationSpeed = speed;
+      cameraOffset = { x: window.innerWidth/2, y: window.innerHeight/2 }
+      updateInfoBar();
+      speedSlider.value = 99 - speed;
+    }
+  }
 
-  setOrbit.addEventListener('click', () => {
-    const [zoom, speed] = pattern1(U);
-    cameraZoom = zoom;
-    simulationSpeed = speed;
-    cameraOffset = { x: window.innerWidth/2, y: window.innerHeight/2 }
-    updateInfoBar();
-  });
-
-  setGrid.addEventListener('click', () => {
-    const [zoom, speed] = pattern2(U);
-    cameraZoom = zoom;
-    simulationSpeed = speed;
-    updateInfoBar();
-    cameraOffset = { x: window.innerWidth/2, y: window.innerHeight/2 }
-  });
-
-  setInfinity.addEventListener('click', () => {
-    const [zoom, speed] = pattern3(U);
-    cameraZoom = zoom;
-    simulationSpeed = speed;
-    updateInfoBar();
-    cameraOffset = { x: window.innerWidth/2, y: window.innerHeight/2 }
-  });
-
-  setCircle.addEventListener('click', () => {
-    const [zoom, speed] = pattern4(U);
-    cameraZoom = zoom;
-    simulationSpeed = speed;
-    updateInfoBar();
-    cameraOffset = { x: window.innerWidth/2, y: window.innerHeight/2 }
-  });
+  setOrbit.addEventListener('click',setPattern(orbit));
+  setGrid.addEventListener('click', setPattern(grid));
+  setInfinity.addEventListener('click', setPattern(infinity));
+  setCircle.addEventListener('click', setPattern(circle));
+  setSquare.addEventListener('click', setPattern(square))
+  setSinewave.addEventListener('click', setPattern(sinewave))
 
   infoBar = document.getElementById('info-bar');
   canvas = document.getElementById("canvas");
@@ -333,6 +326,6 @@ window.addEventListener('load', () => {
     pausePlay();
     startTime = (new Date()).getTime();
     draw()
-  }, 200);
+  }, 500);
 });
 

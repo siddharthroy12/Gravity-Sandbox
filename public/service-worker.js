@@ -1,4 +1,4 @@
-const version = '1.1.1';
+const version = '1.1.2';
 
 const contentToCache = [
   '/',
@@ -24,7 +24,12 @@ self.addEventListener('install', function(e) {
 });
 
 self.addEventListener("activate", event => {
-  console.log('Activate!');
+  event.waitUntil(caches.keys().then((keyList) => {
+    return Promise.all(keyList.map((key) => {
+      if (key === cacheName) { return; }
+      return caches.delete(key);
+    }))
+  }));
 });
 
 self.addEventListener('fetch', function(e) {

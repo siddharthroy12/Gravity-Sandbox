@@ -13,6 +13,10 @@ a,
   color: #fff;
 }
 
+.btn:hover {
+  background-color: rgba(255, 255, 255, 0.1)
+}
+
 #canvas {
   width: 100%;
   height: 100%;
@@ -30,6 +34,7 @@ a,
   align-items: center;
   justify-content: center;
   margin-bottom: 5px;
+  background: #0e0e0e;
 }
 
 .tool-bar {
@@ -74,6 +79,12 @@ a,
   padding-left: 10px;
   font-family: monospace;
   border-bottom: 1px solid #383838;
+  background: #0e0e0e;
+  cursor: pointer;
+}
+
+#box button:hover {
+  background-color: rgba(255, 255, 255, 0.1)
 }
 
 .btn svg {

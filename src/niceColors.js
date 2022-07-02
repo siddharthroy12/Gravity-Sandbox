@@ -1,3 +1,5 @@
+let currentIndex = 0;
+
 export const niceColors = [
   '#50FA7B', // Green
   '#C778DD', // Violet
@@ -8,5 +10,10 @@ export const niceColors = [
 ];
 
 export function getRandomNiceColor() {
-  return niceColors[Math.floor(Math.random() * niceColors.length)];
+  const color = niceColors[currentIndex];
+  currentIndex++;
+  if (currentIndex > niceColors.length-1) {
+    currentIndex = 0;
+  }
+  return color;
 }

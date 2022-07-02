@@ -1,10 +1,7 @@
 import Body from './Body';
 import Vector2 from './Vector2';
 
-// A planet with two moons
-export function pattern1(U) {
-  U.clear();
-
+export function orbit(U) {
   U.addBody(new Body(1000), 0, 0);
   let moon1 = new Body(10);
   moon1.velocity.set(0, 20);
@@ -12,27 +9,27 @@ export function pattern1(U) {
   let moon2 = new Body(10);
   moon2.velocity.set(0, -20);
   U.addBody(moon2, -200, 0);
+  let moon3 = new Body(10);
+  moon3.velocity.set(0, 14);
+  U.addBody(moon3, -500, 0);
+  let moon4 = new Body(10);
+  moon4.velocity.set(0, -14);
+  U.addBody(moon4, 500, 0);
 
   return [1, 44];
 }
 
-// A grid of planets
-export function pattern2(U) {
-  U.clear();
-
+export function grid(U) {
   for (let i = -5.5; i <= 5.5; i++) {
     for (let j = -5.5; j <= 5.5; j++) {
       U.addBody(new Body(10), i * 60, j * 60);
     }
   }
 
-  return [0.78, 200];
+  return [0.78, 102];
 }
 
-// INFINITY
-export function pattern3(U) {
-  U.clear();
-
+export function infinity(U) {
   for (let i = 0; i < 360; i += 10) {
     const v = new Vector2(-200, 0);
     v.x = v.x * Math.cos(i * (Math.PI/180)) - v.y * Math.sin(i * (Math.PI/180))
@@ -43,10 +40,7 @@ export function pattern3(U) {
   return [1.58, 69];
 }
 
-// Circle
-export function pattern4(U) {
-  U.clear();
-
+export function circle(U) {
   U.addBody(new Body(50), 0, 0);
 
   for (let i = 0; i < 360; i += 10) {
@@ -62,3 +56,35 @@ export function pattern4(U) {
   return [1.47, 44];
 }
 
+export function square(U) {
+  // Top
+  for (let i = -10; i <= 10; i++) {
+    let body = new Body(10);
+    U.addBody(body, i*20, -(10*20));
+  }
+  // Bottom
+  for (let i = -10; i <= 10; i++) {
+    let body = new Body(10);
+    U.addBody(body, i*20, (10*20));
+  }
+
+  // Left
+  for (let i = -9; i <= 9; i++) {
+    let body = new Body(10);
+    U.addBody(body, -(10*20), i*20);
+  }
+  // Right
+  for (let i = -9; i <= 9; i++) {
+    let body = new Body(10);
+    U.addBody(body, (10*20), i*20);
+  }
+
+  return [1, 44];
+}
+
+export function sinewave(U) {
+  for (let i = -20; i <= 20; i++) {
+    U.addBody(new Body(10), i*20, Math.sin(i)*50);
+  }
+  return [1, 44];
+}
