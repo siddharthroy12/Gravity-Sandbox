@@ -1,3 +1,8 @@
+// Warning: Spagetti code
+// TODO:
+// Add undo/redo placing bodies
+// Make gravity input functional
+
 import './style.css'
 
 import Body, { mass2radius } from './Body';
@@ -13,7 +18,7 @@ let simulationRunning = false;
 let startTime: number;
 let simulationSpeed = 44;
 let panMode = true;
-let nextColor = getRandomNiceColor();
+let nextColor = "random";
 let nextMass = 10;
 let bodyToFollow = null;
 let isTouchDevice = false;
@@ -26,7 +31,7 @@ orbit(U);
 function simulation(context: CanvasRenderingContext2D) {
   let nowTime = (new Date()).getTime();
   let time = (nowTime - startTime);
-  if (simulationRunning && !autoPause) {
+  if (simulationRunning && !autoPause && !isDragging) {
     U.update(time / simulationSpeed);
   }
 
@@ -48,15 +53,15 @@ let mousePosInViewport = { x: 0, y: 0 }; // Inside window
 let launchStart = mousePos;
 let launching = false;
 let infoBar: HTMLElement;
+const gridSize = 20
 
 // The bottom left section
 function updateInfoBar() {
-  infoBar.innerText = `
-    Looking at : ${(cameraOffset.x+'').slice(0, 7)} ${(cameraOffset.y+'').slice(0, 7)}
-    Zoom : ${(cameraZoom+'').slice(0, 4)}
-    Bodies: ${U.bodies.length}
-    Speed : ${simulationSpeed} (Less is faster)
-  `;
+  infoBar.innerText =
+    `Looking at : ${(cameraOffset.x+'').slice(0, 7)} ${(cameraOffset.y+'').slice(0, 7)} | ` +
+    `Zoom : ${(cameraZoom+'').slice(0, 4)} | ` +
+    `Bodies: ${U.bodies.length}`
+  ;
 }
 
 function draw() {
@@ -69,6 +74,35 @@ function draw() {
   ctx.translate( -window.innerWidth / 2 + cameraOffset.x, -window.innerHeight / 2 + cameraOffset.y );
   ctx.clearRect(0,0, window.innerWidth, window.innerHeight);
 
+  // Draw background grid
+  ctx.beginPath();
+
+  let startX = ((0 - window.innerWidth/2)/cameraZoom) - (cameraOffset.x - window.innerWidth/2);
+  let startY = ((0 - window.innerHeight/2)/cameraZoom) - (cameraOffset.y - window.innerHeight/2);
+  let endX = ((window.innerWidth - window.innerWidth/2)/cameraZoom) - (cameraOffset.x - window.innerWidth/2);
+  let endY = ((window.innerHeight - window.innerHeight/2)/cameraZoom) - (cameraOffset.y - window.innerHeight/2);
+
+  startX = Math.floor(startX/gridSize) * gridSize
+  startY = Math.floor(startY/gridSize) * gridSize
+  endX = (Math.floor(endX/gridSize) * gridSize) + gridSize
+  endY = (Math.floor(endY/gridSize) * gridSize) + gridSize
+
+  for (let i = startY; i <= endY; i += gridSize) {
+    ctx.beginPath();
+    ctx.moveTo(startX, i);
+    ctx.lineTo(endX, i);
+    ctx.strokeStyle = "#323232"
+    ctx.stroke();
+  }
+
+  for (let i = startX; i <= endX; i += gridSize) {
+    ctx.beginPath();
+    ctx.moveTo(i, startY);
+    ctx.lineTo(i, endY);
+    ctx.strokeStyle = "#323232"
+    ctx.stroke();
+  }
+
   simulation(ctx);
 
   if (bodyToFollow) {
@@ -79,18 +113,23 @@ function draw() {
 
   updateMousePosition();
 
-  if (launching) {
-    // Draw the preview of body at mouse location
-    ctx.fillStyle = nextColor
-    ctx.beginPath();
-    ctx.arc(mousePos.x, mousePos.y, mass2radius(nextMass), 0, 2 * Math.PI);
-    ctx.fill();
-    ctx.strokeStyle = nextColor;
+  let x = Math.floor(mousePos.x/gridSize) * gridSize
+  let y = Math.floor(mousePos.y/gridSize) * gridSize
 
+  // Draw Preview
+  if (!panMode) {
+    ctx.fillStyle = "white";
+    ctx.beginPath();
+    ctx.arc(x, y, mass2radius(nextMass), 0, 2 * Math.PI);
+    ctx.fill();
+  }
+
+  if (launching) {
     // Draw line of drag when placing
     ctx.beginPath();
     ctx.moveTo(launchStart.x, launchStart.y);
-    ctx.lineTo(mousePos.x, mousePos.y);
+    ctx.lineTo(x, y);
+    ctx.strokeStyle = "white";
     ctx.stroke();
   }
 
@@ -116,6 +155,8 @@ function onPointerDown(e: MouseEvent) {
   let y = (getEventLocation(e).y/cameraZoom - cameraOffset.y);
   dragStart.x = x;
   dragStart.y = y;
+  dragStart.x = Math.floor(x/gridSize) * gridSize;
+  dragStart.y = Math.floor(y/gridSize) * gridSize;
 
   if (panMode && e.button === 0 || (!panMode && e.button === 2)) {
     bodyToFollow = U.getBodyByPoint(mousePos.x, mousePos.y);
@@ -129,6 +170,10 @@ function onPointerDown(e: MouseEvent) {
       x: ((getEventLocation(e).x - window.innerWidth/2)/cameraZoom) - (cameraOffset.x - window.innerWidth/2),
       y: ((getEventLocation(e).y - window.innerHeight/2)/cameraZoom) - (cameraOffset.y - window.innerHeight/2),
     };
+
+    launchStart.x = Math.floor(launchStart.x/gridSize) * gridSize
+    launchStart.y = Math.floor(launchStart.y/gridSize) * gridSize
+
     launching = true;
   }
 }
@@ -140,17 +185,17 @@ function onPointerUp(e: MouseEvent) {
   canvas.style.cursor = 'default';
 
   if ((!panMode && e.button !== 2) || (panMode && e.button === 2)) {
-    let x = (mousePosInViewport.x/cameraZoom - cameraOffset.x);
-    let y = (mousePosInViewport.y/cameraZoom - cameraOffset.y);
-    let b = new Body(nextMass, nextColor);
-    let v = new Vector2(x - dragStart.x, y - dragStart.y);
+    let x = Math.floor(mousePos.x/gridSize) * gridSize;
+    let y = Math.floor(mousePos.y/gridSize) * gridSize;
+
+    let b = new Body(nextMass, nextColor === "random" ? getRandomNiceColor() : nextColor);
+    let v = new Vector2(x - launchStart.x, y - launchStart.y);
     v.x = -v.x
     v.y = -v.y
     v.x *= 0.2;
     v.y *= 0.2;
     b.velocity.add(v);
-    U.addBody(b, mousePos.x, mousePos.y);
-    nextColor = getRandomNiceColor();
+    U.addBody(b, x, y);
     launchStart = mousePos;
     updateInfoBar();
     launching = false;
@@ -230,8 +275,9 @@ window.addEventListener('load', () => {
   const panAddBtn = document.getElementById('pan-add-btn');
   const clearBtn = document.getElementById('clear');
 
-  const massSlider = document.getElementById('mass-slider');
-  const speedSlider:HTMLInputElement = (document.getElementById('speed-slider')) as HTMLInputElement;
+  const massSlider = document.getElementById('mass');
+  const speedSlider:HTMLInputElement = (document.getElementById('speed')) as HTMLInputElement;
+  const colorInput = document.getElementById('color');
 
   const setOrbit = document.getElementById('set-orbit');
   const setGrid = document.getElementById('set-grid');
@@ -248,7 +294,7 @@ window.addEventListener('load', () => {
       simulationSpeed = speed;
       cameraOffset = { x: window.innerWidth/2, y: window.innerHeight/2 }
       updateInfoBar();
-      speedSlider.value = (99 - speed) + "";
+      speedSlider.value = (speed) + "";
     }
   }
 
@@ -263,16 +309,24 @@ window.addEventListener('load', () => {
   canvas = (document.getElementById("canvas")) as HTMLCanvasElement;
   ctx = canvas.getContext('2d');
 
-  massSlider.addEventListener('change', (e:InputEvent) => {
+  massSlider.addEventListener('input', (e:InputEvent) => {
     nextMass = parseInt((e.target as HTMLInputElement).value);
   });
 
-  speedSlider.addEventListener('change', (e) => {
-    simulationSpeed = 100 - parseInt((e.target as HTMLInputElement).value);
+  speedSlider.addEventListener('input', (e) => {
+    simulationSpeed = parseInt((e.target as HTMLInputElement).value);
     updateInfoBar();
   });
 
-  speedSlider.value = (99 - simulationSpeed) + '';
+  colorInput.addEventListener('input', (e) => {
+    if ((e.target as HTMLInputElement).value.startsWith("#") && (e.target as HTMLInputElement).value.length === 7 ) {
+      nextColor = (e.target as HTMLInputElement).value;
+    } else {
+      nextColor = "random"
+    }
+  })
+
+  speedSlider.value = (simulationSpeed) + '';
 
   function pausePlay() {
     simulationRunning = !simulationRunning;

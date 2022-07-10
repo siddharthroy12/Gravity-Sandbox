@@ -9,14 +9,21 @@ function gravity(m1:number, m2:number, dist:number) {
 
 export default class Universe {
   bodies: Body[];
+  previousPlacedCoords: {};
 
   constructor() {
     this.bodies = [];
+    this.previousPlacedCoords = {};
   }
 
   addBody(b: Body, x:number, y:number) {
-    b.position.set(x, y);
-    this.bodies.push(b);
+    if (!this.previousPlacedCoords[`${x}:${y}`]) {
+      b.position.set(x, y);
+
+      this.bodies.push(b);
+
+      this.previousPlacedCoords[`${x}:${y}`] = true;
+    }
   }
 
   getBodyByPoint(x:number, y:number) {
@@ -36,9 +43,11 @@ export default class Universe {
 
   clear() {
     this.bodies = [];
+    this.previousPlacedCoords = {};
   }
 
   update(dt:number) {
+    this.previousPlacedCoords = {};
     // Calculate gravitational forces between all bodies. We need at least
     // two bodies to do this, of course.
     if (this.bodies.length > 1) {

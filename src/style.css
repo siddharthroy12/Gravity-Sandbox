@@ -14,7 +14,7 @@ a,
 }
 
 .btn:hover {
-  background-color: rgba(255, 255, 255, 0.1)
+  background-color: #535353;
 }
 
 #canvas {
@@ -24,17 +24,18 @@ a,
 }
 
 .btn {
+  border-radius: 3px;
   background: unset;
   border: none;
   cursor: pointer;
-  border: 1px solid #383838;
+  border: 2px solid black;
   width: 50px;
   height: 50px;
   display: flex;
   align-items: center;
   justify-content: center;
   margin-bottom: 5px;
-  background: #0e0e0e;
+  background: #323232;
 }
 
 .tool-bar {
@@ -56,7 +57,7 @@ a,
 #box {
   display: none;
   position: absolute;
-  border: 1px solid #383838;
+  border: 2px solid black;
   border-bottom: none;
   width: 100px;
   right: 0px;
@@ -78,76 +79,72 @@ a,
   padding: 5px;
   padding-left: 10px;
   font-family: monospace;
-  border-bottom: 1px solid #383838;
-  background: #0e0e0e;
+  border-bottom: 1px solid black;
+  background: #323232;
   cursor: pointer;
 }
 
 #box button:hover {
-  background-color: rgba(255, 255, 255, 0.1)
+  background-color: #535353;
 }
 
 .btn svg {
   width: 50px;
 }
 
-.sliders {
+.sliders-container {
   position: fixed;
+  display: flex;
+  flex-direction: column;
+  align-items: end;
   top: 10px;
   right: 10px;
-}
-
-.slider {
-  position: relative;
-}
-
-.slider label {
-  position: absolute;
-  left: 10px;
-  top: 45%;
-  transform: translateY(-50%);
-  pointer-events: none;
-  font-family: monospace;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
   user-select: none;
 }
 
-input[type="range"] {
-  appearance: none;
-  background: unset;
-  border: 1px solid #383838;
-  overflow: hidden;
-  height: 25px;
-  outline: none;
+.sliders {
+  background: #323232;
+  padding: 5px 10px;
+  border: 2px solid black;
+  display: flex;
+  flex-direction: column;
+  align-items: end;
+  border-radius: 3px;
+  margin-bottom: 10px;
+  width: fit-content;
 }
 
-input[type="range"]::-webkit-slider-thumb {
-  appearance: none;
-  width: 0px;
-  height: 0px;
-  background: unset;
-  box-shadow: -200px 0 0 200px #242424;
-  cursor: pointer;
+.slider {
+  margin: 5px 0;
 }
 
-input[type="range"]::-moz-range-thumb {
-  width: 0px;
-  height: 0px;
-  background: unset;
-  box-shadow: -200px 0 0 200px #242424;
-  cursor: pointer;
+.slider label {
+  color: #DCDCDC;
+  margin-right: 10px;
+  font-size: 15px;
+}
+
+input {
+  background: #252525;
+  border: none;
+  color: white;
+  padding: 10px;
+  border-radius: 3px;
+  width: 50px;
 }
 
 .info-bar {
+  background-color: #323232;
+  color: #A0A0A0;
   position: fixed;
-  bottom: 5px;
-  left: 5px;
+  bottom: 0px;
+  left: 0;
   right: 0;
   font-size: 12px;
+  border-top: 2px solid black;
   font-family: monospace;
   pointer-events: none;
+  padding: 6px;
 }
 
 .links {
@@ -156,6 +153,10 @@ input[type="range"]::-moz-range-thumb {
   right: 5px;
   font-size: 12px;
   font-family: monospace;
+}
+
+.links * {
+  color: #A0A0A0;
 }
 
 @media screen and (max-width: 500px) {

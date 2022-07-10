@@ -32,16 +32,30 @@
         </div>
       </div>
     </div>
-    <div class="sliders">
-      <div class="slider">
-        <label for="mass-slider">Mass</label>
-        <input type="range" id="mass-slider" min="10" max="1000" value="10" step="1">
+
+    <div class="sliders-container">
+      <div class="sliders">
+        <div class="slider">
+          <label for="mass">Mass</label>
+          <input type="number" id="mass" value="10">
+        </div>
+        <div class="slider">
+          <label for="color">Color</label>
+          <input type="text" id="color" value="random">
+        </div>
       </div>
-      <div class="slider">
-        <label for="speed-slider">Speed</label>
-        <input type="range" id="speed-slider" min="-99" max="99" value="50" step="1">
+      <div class="sliders">
+        <div class="slider">
+          <label for="speed">Speed</label>
+          <input type="number" id="speed" min="-99" max="99" value="50">
+        </div>
+        <div class="slider">
+          <label for="gravity">Gravity</label>
+          <input type="number" id="gravity" value="100">
+        </div>
       </div>
     </div>
+
     <div class="info-bar" id="info-bar"></div>
     <div class="links">
       <a href="https://github.com/siddharthroy12/Gravity-Sandbox" target="_blank">Source Code</a> |
