@@ -3,12 +3,20 @@ import { getRandomNiceColor } from './niceColors';
 
 const TAIL_SIZE = 50;
 
-export function mass2radius(mass) {
+export function mass2radius(mass: number) {
   return Math.log(mass) * 3.0;
 }
 
 export default class Body {
-  constructor(mass, color) {
+  mass: number;
+  size: number;
+  color: string;
+  position: Vector2;
+  velocity: Vector2;
+  previousStates: ({x: number, y:number})[];
+  dead: boolean;
+
+  constructor(mass:number, color?: string) {
     this.mass = mass;
     this.size = mass2radius(mass);
     this.color = color != null ? color : getRandomNiceColor();
@@ -18,7 +26,7 @@ export default class Body {
     this.dead = false;
   }
 
-  update(dt, showTail = true) {
+  update(dt:number, showTail = true) {
     this.position.x += this.velocity.x * dt;
     this.position.y += this.velocity.y * dt;
 
@@ -31,15 +39,11 @@ export default class Body {
     }
   }
 
-  distanceSquared(b) {
-    return this.position.distanceSquared(b.position);
+  distance(b: Body) {
+    return this.position.distance(b.position);
   }
 
-  distance(b) {
-    return Math.sqrt(this.distanceSquared(b));
-  }
-
-  draw(context) {
+  draw(context:CanvasRenderingContext2D) {
     context.beginPath();
     context.arc(this.position.x, this.position.y, this.size, 0, 2 * Math.PI);
     context.fillStyle = this.color;

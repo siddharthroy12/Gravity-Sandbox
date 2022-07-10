@@ -1,24 +1,27 @@
 import Vector2 from "./Vector2";
-import Body from "./Body";
+import Body from './Body';
 
 const GRAVITY_CONSTANT = 100.0;
 
-function gravity(m1, m2, dist) {
+function gravity(m1:number, m2:number, dist:number) {
   return (GRAVITY_CONSTANT * m1 * m2) / ((dist * dist) + 9000);
 }
 
 export default class Universe {
+  bodies: Body[];
+
   constructor() {
     this.bodies = [];
   }
 
-  addBody(b, x, y) {
+  addBody(b: Body, x:number, y:number) {
     b.position.set(x, y);
     this.bodies.push(b);
   }
 
-  getBodyByPoint(x, y) {
+  getBodyByPoint(x:number, y:number) {
     let result = null;
+
     this.bodies.forEach(body => {
       const pointVector = new Vector2(x, y);
       pointVector.subtract(body.position);
@@ -35,7 +38,7 @@ export default class Universe {
     this.bodies = [];
   }
 
-  update(dt) {
+  update(dt:number) {
     // Calculate gravitational forces between all bodies. We need at least
     // two bodies to do this, of course.
     if (this.bodies.length > 1) {
@@ -66,7 +69,7 @@ export default class Universe {
     });
   }
 
-  draw(context) {
+  draw(context:CanvasRenderingContext2D) {
     this.bodies.forEach(body => body.draw(context));
   }
 }

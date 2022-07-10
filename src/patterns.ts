@@ -1,7 +1,8 @@
 import Body from './Body';
 import Vector2 from './Vector2';
+import Universe from './Universe';
 
-export function orbit(U) {
+export function orbit(U: Universe) {
   U.addBody(new Body(1000), 0, 0);
   let moon1 = new Body(10);
   moon1.velocity.set(0, 20);
@@ -19,7 +20,7 @@ export function orbit(U) {
   return [1, 44];
 }
 
-export function grid(U) {
+export function grid(U: Universe) {
   for (let i = -5.5; i <= 5.5; i++) {
     for (let j = -5.5; j <= 5.5; j++) {
       U.addBody(new Body(10), i * 60, j * 60);
@@ -29,7 +30,7 @@ export function grid(U) {
   return [0.78, 102];
 }
 
-export function infinity(U) {
+export function infinity(U: Universe) {
   for (let i = 0; i < 360; i += 10) {
     const v = new Vector2(-200, 0);
     v.x = v.x * Math.cos(i * (Math.PI/180)) - v.y * Math.sin(i * (Math.PI/180))
@@ -40,7 +41,7 @@ export function infinity(U) {
   return [1.58, 69];
 }
 
-export function circle(U) {
+export function circle(U: Universe) {
   U.addBody(new Body(50), 0, 0);
 
   for (let i = 0; i < 360; i += 10) {
@@ -56,7 +57,7 @@ export function circle(U) {
   return [1.47, 44];
 }
 
-export function square(U) {
+export function square(U: Universe) {
   // Top
   for (let i = -10; i <= 10; i++) {
     let body = new Body(10);
@@ -82,7 +83,7 @@ export function square(U) {
   return [1, 44];
 }
 
-export function sinewave(U) {
+export function sinewave(U: Universe) {
   for (let i = -20; i <= 20; i++) {
     U.addBody(new Body(10), i*20, Math.sin(i)*50);
   }

@@ -1,7 +1,3 @@
-// TODO:
-// - Add option to hide tail
-// - Add tool tip
-// - Fix Offline cache not updating
 import './style.css'
 
 import Body, { mass2radius } from './Body';
@@ -14,7 +10,7 @@ import {
 
 let autoPause = false;
 let simulationRunning = false;
-let startTime;
+let startTime: number;
 let simulationSpeed = 44;
 let panMode = true;
 let nextColor = getRandomNiceColor();
@@ -22,11 +18,12 @@ let nextMass = 10;
 let bodyToFollow = null;
 let isTouchDevice = false;
 
-let U = new Universe(100.0);
+let U = new Universe();
+
 // Default pattern
 orbit(U);
 
-function simulation(context) {
+function simulation(context: CanvasRenderingContext2D) {
   let nowTime = (new Date()).getTime();
   let time = (nowTime - startTime);
   if (simulationRunning && !autoPause) {
@@ -38,8 +35,8 @@ function simulation(context) {
   startTime = nowTime;
 }
 
-let canvas;
-let ctx;
+let canvas: HTMLCanvasElement;
+let ctx: CanvasRenderingContext2D;
 
 let cameraOffset = { x: window.innerWidth/2, y: window.innerHeight/2 };
 let cameraZoom = 1;
@@ -50,7 +47,7 @@ let mousePos = { x: 0, y: 0 }; // Inside 2d world
 let mousePosInViewport = { x: 0, y: 0 }; // Inside window
 let launchStart = mousePos;
 let launching = false;
-let infoBar;
+let infoBar: HTMLElement;
 
 // The bottom left section
 function updateInfoBar() {
@@ -101,11 +98,12 @@ function draw() {
 }
 
 // Gets the relevant location from a mouse or single touch event
-function getEventLocation(e) {
-  if (e.touches && e.touches.length == 1) {
-    return { x:e.touches[0].clientX, y: e.touches[0].clientY }
-  }
-  else if (e.clientX && e.clientY) {
+function getEventLocation(e: TouchEvent|MouseEvent) {
+  if (e instanceof TouchEvent) {
+    if (e.touches && e.touches.length == 1) {
+      return { x:e.touches[0].clientX, y: e.touches[0].clientY }
+    }
+  } else {
     return { x: e.clientX, y: e.clientY }
   }
 }
@@ -113,7 +111,7 @@ function getEventLocation(e) {
 let isDragging = false
 let dragStart = { x: 0, y: 0 }
 
-function onPointerDown(e) {
+function onPointerDown(e: MouseEvent) {
   let x = (getEventLocation(e).x/cameraZoom - cameraOffset.x);
   let y = (getEventLocation(e).y/cameraZoom - cameraOffset.y);
   dragStart.x = x;
@@ -135,7 +133,7 @@ function onPointerDown(e) {
   }
 }
 
-function onPointerUp(e) {
+function onPointerUp(e: MouseEvent) {
   isDragging = false
   initialPinchDistance = null
   lastZoom = cameraZoom
@@ -164,12 +162,12 @@ function updateMousePosition() {
   mousePos.y = ((mousePosInViewport.y - window.innerHeight/2)/cameraZoom) - (cameraOffset.y - window.innerHeight/2);
 }
 
-function updateMousePositionInViewport(e) {
+function updateMousePositionInViewport(e: MouseEvent) {
   mousePosInViewport.x = getEventLocation(e).x;
   mousePosInViewport.y = getEventLocation(e).y;
 }
 
-function onPointerMove(e) {
+function onPointerMove(e: MouseEvent) {
   updateMousePositionInViewport(e);
   updateMousePosition();
 
@@ -180,10 +178,13 @@ function onPointerMove(e) {
   }
 }
 
-function handleTouch(e, singleTouchHandler) {
+function handleTouch(e: TouchEvent, singleTouchHandler: (e: MouseEvent) => void) {
   if (e.touches.length <= 1) {
-    e.button = 0;
-    singleTouchHandler(e)
+
+    // @ts-ignore
+    (e as unknown as MouseEvent).button = 0;
+
+    singleTouchHandler(e as unknown as MouseEvent)
   } else if (e.type == "touchmove" && e.touches.length == 2) {
     isDragging = false
     handlePinch(e)
@@ -193,7 +194,7 @@ function handleTouch(e, singleTouchHandler) {
 let initialPinchDistance = null
 let lastZoom = cameraZoom
 
-function handlePinch(e) {
+function handlePinch(e: TouchEvent) {
   e.preventDefault()
 
   let touch1 = { x: e.touches[0].clientX, y: e.touches[0].clientY }
@@ -209,7 +210,7 @@ function handlePinch(e) {
   }
 }
 
-function adjustZoom(zoomAmount, zoomFactor) {
+function adjustZoom(zoomAmount?: number, zoomFactor?: number) {
   if (!isDragging) {
     if (zoomAmount) {
       cameraZoom += zoomAmount
@@ -230,7 +231,7 @@ window.addEventListener('load', () => {
   const clearBtn = document.getElementById('clear');
 
   const massSlider = document.getElementById('mass-slider');
-  const speedSlider = document.getElementById('speed-slider');
+  const speedSlider:HTMLInputElement = (document.getElementById('speed-slider')) as HTMLInputElement;
 
   const setOrbit = document.getElementById('set-orbit');
   const setGrid = document.getElementById('set-grid');
@@ -239,7 +240,7 @@ window.addEventListener('load', () => {
   const setSquare = document.getElementById('set-square');
   const setSinewave = document.getElementById('set-sinewave');
 
-  function setPattern(pattern) {
+  function setPattern(pattern: (U: Universe) => number[]) {
     return () => {
       U.clear();
       const [zoom, speed] = pattern(U);
@@ -247,7 +248,7 @@ window.addEventListener('load', () => {
       simulationSpeed = speed;
       cameraOffset = { x: window.innerWidth/2, y: window.innerHeight/2 }
       updateInfoBar();
-      speedSlider.value = 99 - speed;
+      speedSlider.value = (99 - speed) + "";
     }
   }
 
@@ -259,19 +260,19 @@ window.addEventListener('load', () => {
   setSinewave.addEventListener('click', setPattern(sinewave))
 
   infoBar = document.getElementById('info-bar');
-  canvas = document.getElementById("canvas");
+  canvas = (document.getElementById("canvas")) as HTMLCanvasElement;
   ctx = canvas.getContext('2d');
 
-  massSlider.addEventListener('change', (e) => {
-    nextMass = e.target.value;
+  massSlider.addEventListener('change', (e:InputEvent) => {
+    nextMass = parseInt((e.target as HTMLInputElement).value);
   });
 
   speedSlider.addEventListener('change', (e) => {
-    simulationSpeed = 100 - e.target.value;
+    simulationSpeed = 100 - parseInt((e.target as HTMLInputElement).value);
     updateInfoBar();
   });
 
-  speedSlider.value = 99 - simulationSpeed;
+  speedSlider.value = (99 - simulationSpeed) + '';
 
   function pausePlay() {
     simulationRunning = !simulationRunning;
@@ -282,7 +283,7 @@ window.addEventListener('load', () => {
     }
   }
 
-  function addPan(value) {
+  function addPan(value?: boolean) {
     panMode = value != null ? value : !panMode;
     if (panMode) {
       panAddBtn.innerHTML = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M14.8284 6.34313L16.2426 4.92892L12 0.686279L7.75735 4.92892L9.17156 6.34313L12 3.51471L14.8284 6.34313Z" fill="currentColor" /><path d="M4.92892 16.2426L6.34313 14.8284L3.51471 12L6.34313 9.17156L4.92892 7.75735L0.686279 12L4.92892 16.2426Z" fill="currentColor" /><path d="M7.75735 19.0711L12 23.3137L16.2426 19.0711L14.8284 17.6568L12 20.4853L9.17156 17.6568L7.75735 19.0711Z" fill="currentColor" /><path d="M17.6568 9.17156L20.4853 12L17.6568 14.8284L19.0711 16.2426L23.3137 12L19.0711 7.75735L17.6568 9.17156Z" fill="currentColor" /><path fill-rule="evenodd" clip-rule="evenodd" d="M12 8C14.2091 8 16 9.79086 16 12C16 14.2091 14.2091 16 12 16C9.79086 16 8 14.2091 8 12C8 9.79086 9.79086 8 12 8ZM12 10C13.1046 10 14 10.8954 14 12C14 13.1046 13.1046 14 12 14C10.8954 14 10 13.1046 10 12C10 10.8954 10.8954 10 12 10Z" fill="currentColor" /></svg>';
