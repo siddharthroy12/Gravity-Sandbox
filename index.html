@@ -11,13 +11,50 @@
     <title>Gravity Sandbox</title>
   </head>
   <body>
+    <div class="menu-bar">
+      <svg width="15" height="14" viewBox="0 0 15 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="6.84935" cy="6.84935" r="3.75609" fill="#88C6FF"/>
+        <path d="M13.8092 6.90458C13.8092 5.32718 13.269 3.79733 12.2787 2.56958C11.2883 1.34183 9.90743 0.490197 8.36576 0.156381C6.82408 -0.177435 5.21458 0.0266927 3.80505 0.734801C2.39552 1.44291 1.27095 2.6123 0.61844 4.04842C-0.0340709 5.48453 -0.175175 7.10077 0.218606 8.62823C0.612386 10.1557 1.51731 11.5023 2.78281 12.4439C4.04831 13.3856 5.59808 13.8655 7.17428 13.8039C8.75047 13.7423 10.2581 13.1428 11.4462 12.1053L10.9109 11.4923C9.86279 12.4075 8.5329 12.9363 7.14249 12.9907C5.75208 13.045 4.38497 12.6217 3.26863 11.791C2.1523 10.9603 1.35404 9.77249 1.00667 8.42507C0.659305 7.07765 0.783777 5.65191 1.35938 4.38507C1.93498 3.11823 2.927 2.08667 4.17039 1.46202C5.41378 0.837378 6.83357 0.657311 8.19353 0.95178C9.55349 1.24625 10.7716 1.9975 11.6452 3.08054C12.5189 4.16358 12.9953 5.51311 12.9953 6.90458H13.8092Z" fill="#88C6FF"/>
+        <circle cx="13.4225" cy="7.23602" r="1.0495" fill="#88C6FF"/>
+      </svg>
+      <div class="menu">
+        File
+        <ul class="menu__list">
+          <li id="new">New<span class="shortcut">CTRL+N</span></li>
+          <li id="open">Open</li>
+          <li id="save">Save<span class="shortcut">CTRL+S</span></li>
+        </ul>
+      </div>
+      <div class="menu">
+        Edit
+        <ul class="menu__list">
+          <li id="undo">Undo<span class="shortcut">CTRL+Z</span></li>
+          <li id="redo">Redo<span class="shortcut">CTRL+Y</span></li>
+          <li id="redo">Delete Selected<span class="shortcut">Delete</span></li>
+        </ul>
+      </div>
+      <div class="menu">
+        About
+      </div>
+      <div class="menu">
+        Help
+      </div>
+      <input type="text" id="filename" oninput="this.size = this.value.length" value="Untitled" size="8">
+    </div>
     <canvas id="canvas" oncontextmenu="return false;"></canvas>
     <div class="tool-bar">
       <button class="btn" id="play-pause-btn">
       </button>
-      <button class="btn" id="pan-add-btn">
+      <button class="btn" id="add-btn" onclick="this.blur();">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 4C11.4477 4 11 4.44772 11 5V11H5C4.44772 11 4 11.4477 4 12C4 12.5523 4.44772 13 5 13H11V19C11 19.5523 11.4477 20 12 20C12.5523 20 13 19.5523 13 19V13H19C19.5523 13 20 12.5523 20 12C20 11.4477 19.5523 11 19 11H13V5C13 4.44772 12.5523 4 12 4Z" fill="currentColor" /></svg>
       </button>
-      <button class="btn" id="clear">
+      <button class="btn" id="pan-btn" onclick="this.blur();">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M14.8284 6.34313L16.2426 4.92892L12 0.686279L7.75735 4.92892L9.17156 6.34313L12 3.51471L14.8284 6.34313Z" fill="currentColor" /><path d="M4.92892 16.2426L6.34313 14.8284L3.51471 12L6.34313 9.17156L4.92892 7.75735L0.686279 12L4.92892 16.2426Z" fill="currentColor" /><path d="M7.75735 19.0711L12 23.3137L16.2426 19.0711L14.8284 17.6568L12 20.4853L9.17156 17.6568L7.75735 19.0711Z" fill="currentColor" /><path d="M17.6568 9.17156L20.4853 12L17.6568 14.8284L19.0711 16.2426L23.3137 12L19.0711 7.75735L17.6568 9.17156Z" fill="currentColor" /><path fill-rule="evenodd" clip-rule="evenodd" d="M12 8C14.2091 8 16 9.79086 16 12C16 14.2091 14.2091 16 12 16C9.79086 16 8 14.2091 8 12C8 9.79086 9.79086 8 12 8ZM12 10C13.1046 10 14 10.8954 14 12C14 13.1046 13.1046 14 12 14C10.8954 14 10 13.1046 10 12C10 10.8954 10.8954 10 12 10Z" fill="currentColor" /></svg>
+      </button>
+      <button class="btn" id="select-btn" onclick="this.blur();">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6.5 6.5H17.5V17.5H6.5V6.5Z" stroke="currentColor" stroke-width="3" /></svg>
+      </button>
+      <button class="btn" id="clear-btn">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M3.49997 12.8995C2.71892 13.6805 2.71892 14.9468 3.49997 15.7279L7.35785 19.5858H4.08576C3.53347 19.5858 3.08576 20.0335 3.08576 20.5858C3.08576 21.1381 3.53347 21.5858 4.08576 21.5858H20.0858C20.638 21.5858 21.0858 21.1381 21.0858 20.5858C21.0858 20.0335 20.638 19.5858 20.0858 19.5858H10.9558L20.4705 10.071C21.2516 9.28999 21.2516 8.02366 20.4705 7.24261L16.2279 2.99997C15.4468 2.21892 14.1805 2.21892 13.3995 2.99997L3.49997 12.8995ZM7.82579 11.4021L4.91418 14.3137L9.15683 18.5563L12.0684 15.6447L7.82579 11.4021ZM9.24 9.98787L13.4826 14.2305L19.0563 8.65683L14.8137 4.41418L9.24 9.98787Z" fill="currentColor" /></svg>
       </button>
       <div class="btn" id="box-btn">
@@ -55,13 +92,12 @@
         </div>
       </div>
     </div>
-
     <div class="info-bar" id="info-bar"></div>
     <div class="links">
       <a href="https://github.com/siddharthroy12/Gravity-Sandbox" target="_blank">Source Code</a> |
       <a href="https://twitter.com/reactoverflow" target="_blank">Author</a> |
       <a href="https://github.com/siddharthroy12/Gravity-Sandbox/issues" target="_blank">Report a bug</a> |
-      <span>Version 1.2.0</span>
+      <span>Version 1.3.1</span>
     </div>
     <script type="module" src="/src/main.ts"></script>
   </body>

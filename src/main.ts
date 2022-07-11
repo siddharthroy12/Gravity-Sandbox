@@ -1,6 +1,9 @@
-// Warning: Spagetti code
+// Warning: spaghetti code
 // TODO:
-// Add undo/redo placing bodies
+// finish menu bar
+// Add save and load function
+// add about
+// add help
 
 import './style.css'
 
@@ -16,24 +19,32 @@ let autoPause = false;
 let simulationRunning = false;
 let startTime: number;
 let simulationSpeed = 44;
-let panMode = true;
+let mode: "pan" | "selection" | "add" = "pan"
 let nextColor = "random";
 let nextMass = 10;
 let bodyToFollow = null;
 let isTouchDevice = false;
-let gravity = 100.0;
+let filename = "Untitled";
 
 let U = new Universe();
 
+U.G = 100.0;
+
 // Default pattern
 orbit(U);
+
+// Setup localStorage
+
+if (localStorage.getItem('files') === null) {
+  localStorage.setItem('files', '{}');
+}
 
 function simulation(context: CanvasRenderingContext2D) {
   let nowTime = (new Date()).getTime();
   let time = (nowTime - startTime);
 
   if (simulationRunning && !autoPause && !isDragging) {
-    U.update(time / simulationSpeed, gravity);
+    U.update(time / simulationSpeed);
   }
 
   U.draw(context, true);
@@ -115,7 +126,7 @@ function draw() {
   let y = Math.floor(mousePos.y/gridSize) * gridSize
 
   // Draw Preview
-  if (!panMode) {
+  if (mode === "add") {
     ctx.fillStyle = "white";
     ctx.beginPath();
     ctx.arc(x, y, mass2radius(nextMass), 0, 2 * Math.PI);
@@ -123,12 +134,19 @@ function draw() {
   }
 
   if (launching) {
-    // Draw line of drag when placing
-    ctx.beginPath();
-    ctx.moveTo(launchStart.x, launchStart.y);
-    ctx.lineTo(x, y);
-    ctx.strokeStyle = "white";
-    ctx.stroke();
+    if (mode === "add") {
+      // Draw line of drag when placing
+      ctx.beginPath();
+      ctx.moveTo(launchStart.x, launchStart.y);
+      ctx.lineTo(x, y);
+      ctx.strokeStyle = "white";
+      ctx.stroke();
+    }
+
+    if (mode === "selection" && launching) {
+      ctx.strokeStyle = "blue";
+      ctx.strokeRect(launchStart.x, launchStart.y, x - launchStart.x, y - launchStart.y);
+    }
   }
 
   requestAnimationFrame(draw);
@@ -156,7 +174,7 @@ function onPointerDown(e: MouseEvent) {
   dragStart.x = Math.floor(x/gridSize) * gridSize;
   dragStart.y = Math.floor(y/gridSize) * gridSize;
 
-  if (panMode && e.button === 0 || (!panMode && e.button === 2)) {
+  if (mode === "pan" || (mode === "add" && e.button === 2)) {
     bodyToFollow = U.getBodyByPoint(mousePos.x, mousePos.y);
     isDragging = true
     canvas.style.cursor = 'move';
@@ -182,7 +200,7 @@ function onPointerUp(e: MouseEvent) {
   lastZoom = cameraZoom
   canvas.style.cursor = 'default';
 
-  if ((!panMode && e.button !== 2) || (panMode && e.button === 2)) {
+  if ((mode === "add" && e.button !== 2)) {
     let x = Math.floor(mousePos.x/gridSize) * gridSize;
     let y = Math.floor(mousePos.y/gridSize) * gridSize;
 
@@ -196,6 +214,16 @@ function onPointerUp(e: MouseEvent) {
     U.addBody(b, x, y);
     launchStart = mousePos;
     updateInfoBar();
+    launching = false;
+  }
+
+  if (mode === "selection") {
+    U.selectBodies(launchStart, mousePos)
+    // This function that does nothing needs to be called two times
+    // for selection to work (thanks javascript)
+    U.update(0);
+    U.update(0);
+    launchStart = mousePos;
     launching = false;
   }
 }
@@ -271,14 +299,17 @@ function adjustZoom(zoomAmount?: number, zoomFactor?: number) {
 window.addEventListener('load', () => {
   // Controls
   const playPauseBtn = document.getElementById('play-pause-btn');
-  const panAddBtn = document.getElementById('pan-add-btn');
-  const clearBtn = document.getElementById('clear');
+  const panBtn = document.getElementById('pan-btn');
+  const addBtn = document.getElementById('add-btn');
+  const clearBtn = document.getElementById('clear-btn');
+  const selectBtn = document.getElementById('select-btn');
 
   // Settings
   const massSlider = document.getElementById('mass');
   const speedSlider:HTMLInputElement = (document.getElementById('speed')) as HTMLInputElement;
   const colorInput = document.getElementById('color');
   const gravityInput = document.getElementById('gravity');
+  const filenameInput = document.getElementById('filename');
 
   // Simulations
   const setOrbit = document.getElementById('set-orbit');
@@ -299,6 +330,63 @@ window.addEventListener('load', () => {
       speedSlider.value = (speed) + "";
     }
   }
+
+  // Menu
+  function newFile() {
+    filename = "Untiled"
+    U.clear();
+    U.G = 100.0;
+    simulationSpeed = 44;
+    (gravityInput as HTMLInputElement).value = U.G + '';
+    (filenameInput as HTMLInputElement).value = filename;
+    (speedSlider as HTMLInputElement).value = simulationSpeed + '';
+    cameraZoom = 1;
+    cameraOffset = { x: window.innerWidth/2, y: window.innerHeight/2 };
+    updateInfoBar();
+    nextColor = "random"
+    nextMass = 10;
+    (massSlider as HTMLInputElement).value = nextMass + '';
+    (colorInput as HTMLInputElement).value = nextColor + '';
+  }
+
+  function save() {
+    const files:any = JSON.parse(localStorage.getItem('files'));
+    files[filename] = JSON.parse(U.getStateJSON());
+    files[filename].speed = simulationSpeed;
+    localStorage.setItem('files', JSON.stringify(files));
+  }
+
+  function load(filename: string) {
+    const files:any = JSON.parse(localStorage.getItem('files'));
+
+    if (files[filename] !== null) {
+      filename = filename;
+      simulationSpeed = files[filename].speed;
+      U.loadStateFromJSON(JSON.stringify(files[filename]));
+      (gravityInput as HTMLInputElement).value = U.G+'';
+    }
+
+    updateInfoBar();
+  }
+
+  function undo() {
+    U.undoLastPlacedBody();
+    updateInfoBar();
+  }
+
+  function redo() {
+    U.redoLastPlacedBody();
+    updateInfoBar();
+  }
+
+  const newFileMenu = document.getElementById('new');
+  const saveFileMenu = document.getElementById('save');
+  const undoMenu = document.getElementById('undo');
+  const redoMenu = document.getElementById('redo');
+  const aboutMenu = document.getElementById('about');
+  const helpMenu = document.getElementById('help');
+
+  newFileMenu.addEventListener('click', newFile);
 
   // Simulations
   setOrbit.addEventListener('click',setPattern(orbit));
@@ -331,7 +419,11 @@ window.addEventListener('load', () => {
   })
 
   gravityInput.addEventListener('input', (e) => {
-    gravity = parseInt((e.target as HTMLInputElement).value)
+    U.G = parseInt((e.target as HTMLInputElement).value)
+  })
+
+  filenameInput.addEventListener('filename', (e) => {
+    filename = (e.target as HTMLInputElement).value;
   })
 
   speedSlider.value = (simulationSpeed) + '';
@@ -345,54 +437,51 @@ window.addEventListener('load', () => {
     }
   }
 
-  function addPan(value?: boolean) {
-    panMode = value != null ? value : !panMode;
-    if (panMode) {
-      panAddBtn.innerHTML = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M14.8284 6.34313L16.2426 4.92892L12 0.686279L7.75735 4.92892L9.17156 6.34313L12 3.51471L14.8284 6.34313Z" fill="currentColor" /><path d="M4.92892 16.2426L6.34313 14.8284L3.51471 12L6.34313 9.17156L4.92892 7.75735L0.686279 12L4.92892 16.2426Z" fill="currentColor" /><path d="M7.75735 19.0711L12 23.3137L16.2426 19.0711L14.8284 17.6568L12 20.4853L9.17156 17.6568L7.75735 19.0711Z" fill="currentColor" /><path d="M17.6568 9.17156L20.4853 12L17.6568 14.8284L19.0711 16.2426L23.3137 12L19.0711 7.75735L17.6568 9.17156Z" fill="currentColor" /><path fill-rule="evenodd" clip-rule="evenodd" d="M12 8C14.2091 8 16 9.79086 16 12C16 14.2091 14.2091 16 12 16C9.79086 16 8 14.2091 8 12C8 9.79086 9.79086 8 12 8ZM12 10C13.1046 10 14 10.8954 14 12C14 13.1046 13.1046 14 12 14C10.8954 14 10 13.1046 10 12C10 10.8954 10.8954 10 12 10Z" fill="currentColor" /></svg>';
-    } else {
-      panAddBtn.innerHTML = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 4C11.4477 4 11 4.44772 11 5V11H5C4.44772 11 4 11.4477 4 12C4 12.5523 4.44772 13 5 13H11V19C11 19.5523 11.4477 20 12 20C12.5523 20 13 19.5523 13 19V13H19C19.5523 13 20 12.5523 20 12C20 11.4477 19.5523 11 19 11H13V5C13 4.44772 12.5523 4 12 4Z" fill="currentColor" /></svg>';
-    }
-  }
-
   window.addEventListener('keydown', (e) => {
+    console.log(e)
     if (e.key === " " || e.code === "Space") {
       pausePlay();
     } else if (e.key === "h" || e.code === "H") {
-      addPan(true);
+      mode = "pan"
     } else if (e.key === "p" || e.code === "P") {
-      addPan(false);
+      mode = "add"
     } else if (e.ctrlKey && (e.key === "z" || e.code === "Z")) {
-      U.undoLastPlacedBody();
+      undo();
     } else if (e.ctrlKey && (e.key === "y" || e.code === "Y")) {
-      U.redoLastPlacedBody();
+      redo();
+    } else if (e.ctrlKey && (e.key === "s" || e.code === "S")) {
+      e.preventDefault();
+      save();
+    } else if (e.ctrlKey && (e.key === "x" || e.code === "X") || e.key === "Delete" || e.code === "Delete") {
+      U.deleteSelectedBodies();
     }
   });
 
   playPauseBtn.addEventListener('click', pausePlay);
-  panAddBtn.addEventListener('click', () => addPan());
+  addBtn.addEventListener('click', () => mode = "add");
+  panBtn.addEventListener('click', () => mode = "pan");
   clearBtn.addEventListener('click', () => { U.clear(); updateInfoBar(); bodyToFollow = null });
+  selectBtn.addEventListener('click', () => mode = "selection");
 
-  // Canvas zoop and pan
-  canvas.addEventListener('mousedown', (e) => { if (!isTouchDevice) { onPointerDown(e) }})
-  canvas.addEventListener('touchstart', (e) => { handleTouch(e, onPointerDown); isTouchDevice = true })
-  canvas.addEventListener('mouseup', (e) => { if (!isTouchDevice) { onPointerUp(e) }})
-  canvas.addEventListener('touchend',  (e) => { handleTouch(e, onPointerUp) })
-  canvas.addEventListener('mousemove', onPointerMove)
-  canvas.addEventListener('touchmove', (e) => { handleTouch(e, onPointerMove) })
-  canvas.addEventListener( 'wheel', (e) => adjustZoom(e.deltaY*SCROLL_SENSITIVITY))
+  // Canvas zoon and pan
+  canvas.addEventListener('mousedown', (e) => { if (!isTouchDevice) { onPointerDown(e) }});
+  canvas.addEventListener('touchstart', (e) => { handleTouch(e, onPointerDown); isTouchDevice = true });
+  canvas.addEventListener('mouseup', (e) => { if (!isTouchDevice) { onPointerUp(e) }});
+  canvas.addEventListener('touchend',  (e) => { handleTouch(e, onPointerUp) });
+  canvas.addEventListener('mousemove', onPointerMove);
+  canvas.addEventListener('touchmove', (e) => { handleTouch(e, onPointerMove) });
+  canvas.addEventListener( 'wheel', (e) => adjustZoom(e.deltaY*SCROLL_SENSITIVITY));
 
   // Pause Simulation when focuse change
   window.addEventListener('blur', () => autoPause = true);
   window.addEventListener('focus', () => setTimeout(() => autoPause = false, 100));
   updateInfoBar();
 
-  addPan();
-
   setTimeout(() => {
     // Ready, set, go
     pausePlay();
     startTime = (new Date()).getTime();
     draw()
-  }, 500);
+  }, 1000);
 });
 

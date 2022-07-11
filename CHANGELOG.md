@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.3.0
+
+- Added menu bar
+- * Added saving and loading simulations
+- * Added select and delete body tool
+- * Added help and about
+
 ## 1.2.0
 
 - Switched to TypeScript

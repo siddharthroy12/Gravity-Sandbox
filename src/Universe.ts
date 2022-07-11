@@ -1,19 +1,40 @@
 import Vector2 from "./Vector2";
 import Body from './Body';
+import {rectCircleCollition} from './helper';
 
 function gravity(G:number, m1:number, m2:number, dist:number) {
     return (G * m1 * m2) / ((dist * dist) + 9000);
 }
 
 export default class Universe {
-  bodies: Body[];
-  previousPlacedCoords: {};
+  bodies: Body[] = [];
+  previousPlacedCoords = {};
   lastAddedBody = [];
   lastRemovedBody = [];
+  selectedBodies = new WeakMap();
+  G:number;
 
-  constructor() {
-    this.bodies = [];
-    this.previousPlacedCoords = {};
+  selectBodies(startPos: {x:number, y:number}, endPos: {x:number, y:number}) {
+    this.selectedBodies = new WeakMap();
+
+    this.bodies.forEach(body => {
+      const rect = {x: startPos.x, y: startPos.y, w: endPos.x - startPos.x, h: endPos.y - startPos.y};
+      const circle = {x: body.position.x, y: body.position.y, r: body.size};
+
+      if (rectCircleCollition(circle, rect)) {
+        this.selectedBodies.set(body, true);
+      }
+    })
+  }
+
+  deleteSelectedBodies() {
+    this.bodies.forEach(body => {
+      if (this.selectedBodies.get(body)) {
+        this.lastRemovedBody.push(body);
+      }
+    })
+
+    this.bodies = this.bodies.filter(body => !this.selectedBodies.get(body));
   }
 
   addBody(b: Body, x:number, y:number) {
@@ -65,7 +86,7 @@ export default class Universe {
     this.previousPlacedCoords = {};
   }
 
-  update(dt:number, G:number) {
+  update(dt:number) {
     this.previousPlacedCoords = {};
     // Calculate gravitational forces between all bodies. We need at least
     // two bodies to do this, of course.
@@ -76,7 +97,7 @@ export default class Universe {
           let b2 = this.bodies[j];
 
           if (b1 !== b2) {
-            let force = gravity(G, b1.mass, b2.mass, b1.distance(b2));
+            let force = gravity(this.G, b1.mass, b2.mass, b1.distance(b2));
             let acceleration = new Vector2(b1.position);
             acceleration.subtract(b2.position);
             acceleration.normalize();
@@ -99,6 +120,18 @@ export default class Universe {
 
   // Draw
   draw(context:CanvasRenderingContext2D, showTail: boolean) {
-    this.bodies.forEach(body => body.draw(context, showTail));
+    this.bodies.forEach(body => {
+      body.draw(context, showTail, this.selectedBodies.get(body))
+    });
+  }
+
+  getStateJSON() {
+    return JSON.stringify({bodies: this.bodies, G: this.G})
+  }
+
+  loadStateFromJSON(json: string) {
+    const state = JSON.parse(json);
+    this.bodies = state.bodies;
+    this.G = state.G;
   }
 }

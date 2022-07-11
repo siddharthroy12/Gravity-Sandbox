@@ -13,6 +13,10 @@ a,
   color: #fff;
 }
 
+* {
+  outline: none;
+}
+
 .btn:hover {
   background-color: #535353;
 }
@@ -45,10 +49,11 @@ button.btn {
 
 .tool-bar {
   position: fixed;
-  top: 11px;
+  top: 40px;
   left: 0;
   height: 65px;
   padding: 0 15px;
+  z-index: 1;
 }
 
 #play-pause-btn svg {
@@ -102,7 +107,7 @@ button.btn {
   display: flex;
   flex-direction: column;
   align-items: end;
-  top: 10px;
+  top: 40px;
   right: 10px;
   user-select: none;
 }
@@ -164,6 +169,79 @@ input {
 
 .links * {
   color: #A0A0A0;
+}
+
+/* Menu bar */
+
+.menu-bar {
+  position: fixed;
+  background: #323232;
+  width: 100%;
+  display: flex;
+  padding: 0 10px;
+  color: #A0A0A0;
+  align-items: center;
+  border-bottom: 2px solid black;
+  z-index: 2;
+  user-select: none;
+  font-size: 14px;
+}
+
+.menu-bar > * {
+  margin-right: 10px;
+}
+
+.menu {
+  cursor: pointer;
+  padding: 6px 5px;
+  position: relative;
+}
+
+.menu__list {
+  display: none;
+  top: 14px;
+  left: -1px;
+  position: absolute;
+  background: #323232;
+  z-index: 4;
+  border: 2px solid black;
+  list-style: none;
+  padding: 3px 0;
+}
+
+.menu:hover .menu__list {
+  display: block;
+}
+
+.menu__list li {
+  padding: 5px 0;
+  padding-left: 30px;
+  padding-right: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 200px;
+}
+
+.menu-bar input {
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+  padding: 6px;
+  width: auto;
+}
+
+.shortcut {
+  font-size: 12px;
+}
+
+.menu__list li:hover {
+  background-color: #595959;
+}
+
+.menu:hover {
+  background-color: #595959;
 }
 
 @media screen and (max-width: 724px) {

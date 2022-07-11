@@ -43,7 +43,7 @@ export default class Body {
     return this.position.distance(b.position);
   }
 
-  draw(context:CanvasRenderingContext2D, showTail: boolean) {
+  draw(context:CanvasRenderingContext2D, showTail: boolean, showBoundingBox:boolean) {
     context.beginPath();
     context.arc(this.position.x, this.position.y, this.size, 0, 2 * Math.PI);
     context.fillStyle = this.color;
@@ -55,7 +55,7 @@ export default class Body {
     }
 
     // Draw tail
-    if (showTail) {
+    if (showTail && this.previousStates.length > 2) {
       context.beginPath();
       for (let i = 1; i < this.previousStates.length; i++) {
         const currState = this.previousStates[i];
@@ -65,6 +65,17 @@ export default class Body {
       }
       context.strokeStyle = this.color;
       context.stroke();
+    }
+
+    // Draw bounding box
+    if (showBoundingBox) {
+      context.strokeStyle = "white"
+      context.strokeRect(
+        this.position.x - this.size,
+        this.position.y - this.size,
+        this.size * 2,
+        this.size * 2
+      );
     }
   }
 }
