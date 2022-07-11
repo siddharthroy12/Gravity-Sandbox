@@ -6,12 +6,19 @@ function gravity(G:number, m1:number, m2:number, dist:number) {
     return (G * m1 * m2) / ((dist * dist) + 9000);
 }
 
+type History = {
+  type: "add" | "delete",
+  bodies: Body[];
+}
+
 export default class Universe {
   bodies: Body[] = [];
   previousPlacedCoords = {};
   lastAddedBody = [];
   lastRemovedBody = [];
-  selectedBodies = new WeakMap();
+  undoHistory: History[] = [];
+  redoHistory: History[] = [];
+  selectedBodies = new WeakMap<Body, boolean>();
   G:number;
 
   selectBodies(startPos: {x:number, y:number}, endPos: {x:number, y:number}) {
@@ -28,11 +35,15 @@ export default class Universe {
   }
 
   deleteSelectedBodies() {
+    const bodies = [];
+
     this.bodies.forEach(body => {
       if (this.selectedBodies.get(body)) {
-        this.lastRemovedBody.push(body);
+        bodies.push(body);
       }
-    })
+    });
+
+    this.undoHistory.push({type: "delete", bodies})
 
     this.bodies = this.bodies.filter(body => !this.selectedBodies.get(body));
   }
@@ -42,27 +53,47 @@ export default class Universe {
       b.position.set(x, y);
 
       this.bodies.push(b);
-      this.lastAddedBody.push(b);
+
+      this.undoHistory.push({
+        type: "add",
+        bodies:[b]
+      });
 
       this.previousPlacedCoords[`${x}:${y}`] = true;
     }
   }
 
   undoLastPlacedBody() {
-    if (this.lastAddedBody.length) {
-      const lastAddedBody = this.lastAddedBody[this.lastAddedBody.length-1];
-      this.bodies = this.bodies.filter(body => body !== lastAddedBody);
-      this.lastAddedBody.pop();
-      this.lastRemovedBody.push(lastAddedBody);
+    if (this.undoHistory.length) {
+      const lastAction = this.undoHistory[this.undoHistory.length-1];
+
+      switch (lastAction.type) {
+        case "add":
+          this.bodies = this.bodies.filter(body => !lastAction.bodies.includes(body));
+          break;
+        case "delete":
+          this.bodies = [...this.bodies, ...lastAction.bodies];
+          break;
+      }
+
+      this.redoHistory.push(this.undoHistory.pop());
     }
   }
 
   redoLastPlacedBody() {
-    if (this.lastRemovedBody.length) {
-      const lastRemovedBody = this.lastRemovedBody[this.lastRemovedBody.length-1];
-      this.bodies.push(lastRemovedBody);
-      this.lastAddedBody.push(lastRemovedBody)
-      this.lastRemovedBody.pop();
+    if (this.redoHistory.length) {
+      const lastAction = this.redoHistory[this.redoHistory.length-1];
+
+      switch (lastAction.type) {
+        case "add":
+          this.bodies = [...this.bodies, ...lastAction.bodies];
+          break;
+        case "delete":
+          this.bodies = this.bodies.filter(body => !lastAction.bodies.includes(body));
+          break;
+      }
+
+      this.undoHistory.push(this.redoHistory.pop());
     }
   }
 

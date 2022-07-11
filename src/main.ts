@@ -333,7 +333,7 @@ window.addEventListener('load', () => {
 
   // Menu
   function newFile() {
-    filename = "Untiled"
+    filename = "Untitled"
     U.clear();
     U.G = 100.0;
     simulationSpeed = 44;
@@ -452,6 +452,9 @@ window.addEventListener('load', () => {
     } else if (e.ctrlKey && (e.key === "s" || e.code === "S")) {
       e.preventDefault();
       save();
+    } else if (e.ctrlKey && (e.key === "m" || e.code === "M")) {
+      e.preventDefault();
+      newFile();
     } else if (e.ctrlKey && (e.key === "x" || e.code === "X") || e.key === "Delete" || e.code === "Delete") {
       U.deleteSelectedBodies();
     }
