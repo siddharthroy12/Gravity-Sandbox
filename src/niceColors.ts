@@ -1,12 +1,12 @@
 let currentIndex = 0;
 
 export const niceColors = [
-  '#50FA7B', // Green
-  '#C778DD', // Violet
-  '#62AEEF', // Blue
-  '#FF6E6E', // Red
-  '#A7B7D6', // Light Blue
-  '#F1FA8C', // Yellow
+  '#60DB6C', // Green
+  '#FF5353', // Red
+  '#FFEE58', // Yellow
+  '#71FFD4', // Hatsune Miku color
+  '#5259FF', // Blue-ish violet
+  '#C479FF', // Pink-ish violet
 ];
 
 export function getRandomNiceColor() {

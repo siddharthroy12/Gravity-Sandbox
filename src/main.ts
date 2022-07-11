@@ -1,7 +1,6 @@
 // Warning: Spagetti code
 // TODO:
 // Add undo/redo placing bodies
-// Make gravity input functional
 
 import './style.css'
 
@@ -22,6 +21,7 @@ let nextColor = "random";
 let nextMass = 10;
 let bodyToFollow = null;
 let isTouchDevice = false;
+let gravity = 100.0;
 
 let U = new Universe();
 
@@ -31,12 +31,12 @@ orbit(U);
 function simulation(context: CanvasRenderingContext2D) {
   let nowTime = (new Date()).getTime();
   let time = (nowTime - startTime);
+
   if (simulationRunning && !autoPause && !isDragging) {
-    U.update(time / simulationSpeed);
+    U.update(time / simulationSpeed, gravity);
   }
 
-  U.draw(context);
-
+  U.draw(context, true);
   startTime = nowTime;
 }
 
@@ -87,21 +87,19 @@ function draw() {
   endX = (Math.floor(endX/gridSize) * gridSize) + gridSize
   endY = (Math.floor(endY/gridSize) * gridSize) + gridSize
 
+  ctx.beginPath();
   for (let i = startY; i <= endY; i += gridSize) {
-    ctx.beginPath();
     ctx.moveTo(startX, i);
     ctx.lineTo(endX, i);
-    ctx.strokeStyle = "#323232"
-    ctx.stroke();
   }
 
   for (let i = startX; i <= endX; i += gridSize) {
-    ctx.beginPath();
     ctx.moveTo(i, startY);
     ctx.lineTo(i, endY);
-    ctx.strokeStyle = "#323232"
-    ctx.stroke();
   }
+
+  ctx.strokeStyle = "#323232"
+  ctx.stroke();
 
   simulation(ctx);
 
@@ -271,14 +269,18 @@ function adjustZoom(zoomAmount?: number, zoomFactor?: number) {
 
 
 window.addEventListener('load', () => {
+  // Controls
   const playPauseBtn = document.getElementById('play-pause-btn');
   const panAddBtn = document.getElementById('pan-add-btn');
   const clearBtn = document.getElementById('clear');
 
+  // Settings
   const massSlider = document.getElementById('mass');
   const speedSlider:HTMLInputElement = (document.getElementById('speed')) as HTMLInputElement;
   const colorInput = document.getElementById('color');
+  const gravityInput = document.getElementById('gravity');
 
+  // Simulations
   const setOrbit = document.getElementById('set-orbit');
   const setGrid = document.getElementById('set-grid');
   const setInfinity = document.getElementById('set-infinity');
@@ -298,6 +300,7 @@ window.addEventListener('load', () => {
     }
   }
 
+  // Simulations
   setOrbit.addEventListener('click',setPattern(orbit));
   setGrid.addEventListener('click', setPattern(grid));
   setInfinity.addEventListener('click', setPattern(infinity));
@@ -309,6 +312,7 @@ window.addEventListener('load', () => {
   canvas = (document.getElementById("canvas")) as HTMLCanvasElement;
   ctx = canvas.getContext('2d');
 
+  // Settings
   massSlider.addEventListener('input', (e:InputEvent) => {
     nextMass = parseInt((e.target as HTMLInputElement).value);
   });
@@ -324,6 +328,10 @@ window.addEventListener('load', () => {
     } else {
       nextColor = "random"
     }
+  })
+
+  gravityInput.addEventListener('input', (e) => {
+    gravity = parseInt((e.target as HTMLInputElement).value)
   })
 
   speedSlider.value = (simulationSpeed) + '';
@@ -353,6 +361,10 @@ window.addEventListener('load', () => {
       addPan(true);
     } else if (e.key === "p" || e.code === "P") {
       addPan(false);
+    } else if (e.ctrlKey && (e.key === "z" || e.code === "Z")) {
+      U.undoLastPlacedBody();
+    } else if (e.ctrlKey && (e.key === "y" || e.code === "Y")) {
+      U.redoLastPlacedBody();
     }
   });
 

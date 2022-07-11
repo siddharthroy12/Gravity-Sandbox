@@ -1,15 +1,15 @@
 import Vector2 from "./Vector2";
 import Body from './Body';
 
-const GRAVITY_CONSTANT = 100.0;
-
-function gravity(m1:number, m2:number, dist:number) {
-  return (GRAVITY_CONSTANT * m1 * m2) / ((dist * dist) + 9000);
+function gravity(G:number, m1:number, m2:number, dist:number) {
+    return (G * m1 * m2) / ((dist * dist) + 9000);
 }
 
 export default class Universe {
   bodies: Body[];
   previousPlacedCoords: {};
+  lastAddedBody = [];
+  lastRemovedBody = [];
 
   constructor() {
     this.bodies = [];
@@ -21,8 +21,27 @@ export default class Universe {
       b.position.set(x, y);
 
       this.bodies.push(b);
+      this.lastAddedBody.push(b);
 
       this.previousPlacedCoords[`${x}:${y}`] = true;
+    }
+  }
+
+  undoLastPlacedBody() {
+    if (this.lastAddedBody.length) {
+      const lastAddedBody = this.lastAddedBody[this.lastAddedBody.length-1];
+      this.bodies = this.bodies.filter(body => body !== lastAddedBody);
+      this.lastAddedBody.pop();
+      this.lastRemovedBody.push(lastAddedBody);
+    }
+  }
+
+  redoLastPlacedBody() {
+    if (this.lastRemovedBody.length) {
+      const lastRemovedBody = this.lastRemovedBody[this.lastRemovedBody.length-1];
+      this.bodies.push(lastRemovedBody);
+      this.lastAddedBody.push(lastRemovedBody)
+      this.lastRemovedBody.pop();
     }
   }
 
@@ -46,7 +65,7 @@ export default class Universe {
     this.previousPlacedCoords = {};
   }
 
-  update(dt:number) {
+  update(dt:number, G:number) {
     this.previousPlacedCoords = {};
     // Calculate gravitational forces between all bodies. We need at least
     // two bodies to do this, of course.
@@ -57,7 +76,7 @@ export default class Universe {
           let b2 = this.bodies[j];
 
           if (b1 !== b2) {
-            let force = gravity(b1.mass, b2.mass, b1.distance(b2));
+            let force = gravity(G, b1.mass, b2.mass, b1.distance(b2));
             let acceleration = new Vector2(b1.position);
             acceleration.subtract(b2.position);
             acceleration.normalize();
@@ -78,7 +97,8 @@ export default class Universe {
     });
   }
 
-  draw(context:CanvasRenderingContext2D) {
-    this.bodies.forEach(body => body.draw(context));
+  // Draw
+  draw(context:CanvasRenderingContext2D, showTail: boolean) {
+    this.bodies.forEach(body => body.draw(context, showTail));
   }
 }

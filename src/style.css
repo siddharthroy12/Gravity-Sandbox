@@ -24,7 +24,7 @@ a,
 }
 
 .btn {
-  border-radius: 3px;
+  border-radius: 5px;
   background: unset;
   border: none;
   cursor: pointer;
@@ -36,6 +36,11 @@ a,
   justify-content: center;
   margin-bottom: 5px;
   background: #323232;
+}
+
+button.btn {
+  width: 54px;
+  height: 54px;
 }
 
 .tool-bar {
@@ -61,7 +66,7 @@ a,
   border-bottom: none;
   width: 100px;
   right: 0px;
-  top: -1px;
+  top: -2px;
   transform: translate(100%);
 }
 
@@ -109,7 +114,7 @@ a,
   display: flex;
   flex-direction: column;
   align-items: end;
-  border-radius: 3px;
+  border-radius: 5px;
   margin-bottom: 10px;
   width: fit-content;
 }
@@ -145,11 +150,13 @@ input {
   font-family: monospace;
   pointer-events: none;
   padding: 6px;
+  user-select: none;
 }
 
 .links {
+  user-select: none;
   position: fixed;
-  bottom: 5px;
+  bottom: 7px;
   right: 5px;
   font-size: 12px;
   font-family: monospace;
@@ -159,9 +166,9 @@ input {
   color: #A0A0A0;
 }
 
-@media screen and (max-width: 500px) {
+@media screen and (max-width: 724px) {
   .info-bar {
-    bottom: 20px;
+    height: 30px;
   }
   .links {
     left: 5px;
