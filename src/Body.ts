@@ -30,7 +30,7 @@ export default class Body {
     this.position.x += this.velocity.x * dt;
     this.position.y += this.velocity.y * dt;
 
-    if (this.previousStates.length > TAIL_SIZE) {
+    if (this.previousStates.length > TAIL_SIZE && dt) {
       this.previousStates.shift();
     }
 
