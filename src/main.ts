@@ -25,6 +25,7 @@ let nextMass = 10;
 let bodyToFollow = null;
 let isTouchDevice = false;
 let filename = "Untitled";
+let moveSvgString = new Blob(["hals"],{type: 'image/svg+xml'});
 
 let U = new Universe();
 
@@ -177,7 +178,6 @@ function onPointerDown(e: MouseEvent) {
   if (mode === "pan" || (mode === "add" && e.button === 2)) {
     bodyToFollow = U.getBodyByPoint(mousePos.x, mousePos.y);
     isDragging = true
-    canvas.style.cursor = 'move';
   } else {
     updateMousePositionInViewport(e);
     updateMousePosition();
@@ -198,7 +198,6 @@ function onPointerUp(e: MouseEvent) {
   isDragging = false
   initialPinchDistance = null
   lastZoom = cameraZoom
-  canvas.style.cursor = 'default';
 
   if ((mode === "add" && e.button !== 2)) {
     let x = Math.floor(mousePos.x/gridSize) * gridSize;
@@ -460,11 +459,26 @@ window.addEventListener('load', () => {
     }
   });
 
+  function changeCursorToSVG(svg: string) {
+    document.getElementById("canvas").style.cursor = 'url("data:image/svg+xml;base64,' + window.btoa(svg.trim()) + '"),auto'
+  }
+
   playPauseBtn.addEventListener('click', pausePlay);
-  addBtn.addEventListener('click', () => mode = "add");
-  panBtn.addEventListener('click', () => mode = "pan");
+  addBtn.addEventListener('click', () => {
+    mode = "add"
+    document.getElementById('canvas').style.cursor = "none";
+  });
+  panBtn.addEventListener('click', () => {
+    mode = "pan"
+    changeCursorToSVG(panBtn.innerHTML);
+  });
+  changeCursorToSVG(panBtn.innerHTML);
   clearBtn.addEventListener('click', () => { U.clear(); updateInfoBar(); bodyToFollow = null });
-  selectBtn.addEventListener('click', () => mode = "selection");
+  selectBtn.addEventListener('click', () => {
+    mode = "selection"
+    document.getElementById('canvas').style.cursor = "default";
+  });
+
 
   // Canvas zoon and pan
   canvas.addEventListener('mousedown', (e) => { if (!isTouchDevice) { onPointerDown(e) }});
