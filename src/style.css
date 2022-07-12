@@ -209,6 +209,20 @@ input {
   padding: 3px 0;
 }
 
+.sub-menu__list {
+  display: none;
+}
+
+.menu__list li:hover .sub-menu__list {
+  display: block;
+  background: #323232;
+  border: 2px solid black;
+  position: absolute;
+  left: 250px;
+  padding: 3px 0;
+  top: 24px;
+}
+
 .menu:hover .menu__list {
   display: block;
 }
@@ -236,12 +250,41 @@ input {
   font-size: 12px;
 }
 
-.menu__list li:hover {
+.menu__list li:hover:not(.disabled) {
   background-color: #595959;
+}
+
+li.disabled {
+  cursor: default;
 }
 
 .menu:hover {
   background-color: #595959;
+}
+
+.window {
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  background: #323232;
+  border: 2px solid black;
+  padding: 10px;
+}
+
+.window p, .window li {
+  color: #c3c3c3;
+}
+
+.window .close-btn {
+  position: absolute;
+  right: 10px;
+  color: #A0A0A0;
+  cursor: pointer;
+}
+
+.hidden {
+  display: none;
 }
 
 @media screen and (max-width: 724px) {

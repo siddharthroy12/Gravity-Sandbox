@@ -1,9 +1,6 @@
 // Warning: spaghetti code
 // TODO:
-// finish menu bar
-// Add save and load function
-// add about
-// add help
+// Fix this spaghetti code
 
 import './style.css'
 
@@ -15,17 +12,18 @@ import {
   orbit, grid, infinity, circle, square, sinewave
 } from './patterns';
 
+type ModeType = "pan" | "selection" | "add" | "pan"
+
 let autoPause = false;
 let simulationRunning = false;
 let startTime: number;
 let simulationSpeed = 44;
-let mode: "pan" | "selection" | "add" = "pan"
+let mode: ModeType = "pan";
 let nextColor = "random";
 let nextMass = 10;
 let bodyToFollow = null;
 let isTouchDevice = false;
 let filename = "Untitled";
-let moveSvgString = new Blob(["hals"],{type: 'image/svg+xml'});
 
 let U = new Universe();
 
@@ -72,7 +70,8 @@ function updateInfoBar() {
   infoBar.innerText =
     `Looking at : ${(cameraOffset.x+'').slice(0, 7)} ${(cameraOffset.y+'').slice(0, 7)} | ` +
     `Zoom : ${(cameraZoom+'').slice(0, 4)} | ` +
-    `Bodies: ${U.bodies.length}`
+    `Bodies: ${U.bodies.length} | ` +
+    `Mode: ${mode.toUpperCase()}`
   ;
 }
 
@@ -331,6 +330,43 @@ window.addEventListener('load', () => {
   }
 
   // Menu
+  const newFileMenu = document.getElementById('new');
+  const saveFileMenu = document.getElementById('save');
+  const openFileMenu = document.getElementById('open');
+  const undoMenu = document.getElementById('undo');
+  const redoMenu = document.getElementById('redo');
+  const deleteMenu = document.getElementById('delete');
+  const aboutMenu = document.getElementById('about');
+
+  // Update saved files list in menu
+  function updateSavedFilesList() {
+    const savedFiles = Object.keys(JSON.parse(localStorage.getItem("files")));
+
+    if (savedFiles.length) {
+      openFileMenu.getElementsByTagName("ul")[0].innerHTML = "";
+      savedFiles.forEach(file => {
+        const newLi = document.createElement("li")
+        newLi.innerHTML = file;
+        const deleteButton = document.createElement("span");
+        deleteButton.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const files:any = JSON.parse(localStorage.getItem('files'));
+          delete files[file];
+          localStorage.setItem('files', JSON.stringify(files));
+          updateSavedFilesList();
+        })
+        deleteButton.innerHTML = "Delete";
+        newLi.appendChild(deleteButton);
+        newLi.addEventListener('click', () => load(file));
+        openFileMenu.getElementsByTagName("ul")[0].appendChild(newLi);
+      })
+    } else {
+      openFileMenu.getElementsByTagName("ul")[0].innerHTML = "<li class='disabled'>Empty</li>";
+    }
+  }
+
+  updateSavedFilesList();
+
   function newFile() {
     filename = "Untitled"
     U.clear();
@@ -353,19 +389,24 @@ window.addEventListener('load', () => {
     files[filename] = JSON.parse(U.getStateJSON());
     files[filename].speed = simulationSpeed;
     localStorage.setItem('files', JSON.stringify(files));
+    updateSavedFilesList();
   }
 
-  function load(filename: string) {
+  function load(file: string) {
     const files:any = JSON.parse(localStorage.getItem('files'));
 
-    if (files[filename] !== null) {
-      filename = filename;
-      simulationSpeed = files[filename].speed;
-      U.loadStateFromJSON(JSON.stringify(files[filename]));
+    if (files[file] !== null) {
+      console.log(file);
+      simulationSpeed = files[file].speed;
+      U.loadStateFromJSON(JSON.stringify(files[file]));
       (gravityInput as HTMLInputElement).value = U.G+'';
+      (speedSlider as HTMLInputElement).value = simulationSpeed + '';
     }
 
     updateInfoBar();
+    filename = file;
+    (filenameInput as HTMLInputElement).value = filename
+    simulationRunning = false;
   }
 
   function undo() {
@@ -378,14 +419,19 @@ window.addEventListener('load', () => {
     updateInfoBar();
   }
 
-  const newFileMenu = document.getElementById('new');
-  const saveFileMenu = document.getElementById('save');
-  const undoMenu = document.getElementById('undo');
-  const redoMenu = document.getElementById('redo');
-  const aboutMenu = document.getElementById('about');
-  const helpMenu = document.getElementById('help');
-
   newFileMenu.addEventListener('click', newFile);
+  saveFileMenu.addEventListener('click', save);
+  undoMenu.addEventListener('click', undo);
+  redoMenu.addEventListener('click', redo);
+  deleteMenu.addEventListener('click', () => U.deleteSelectedBodies());
+  function toggleAboutWindow() {
+    document.getElementById("about-window").classList.toggle("hidden");
+  }
+  aboutMenu.addEventListener('click', toggleAboutWindow);
+
+  document.getElementById("about-window")
+    .getElementsByClassName("close-btn")[0]
+    .addEventListener('click', toggleAboutWindow);
 
   // Simulations
   setOrbit.addEventListener('click',setPattern(orbit));
@@ -421,7 +467,7 @@ window.addEventListener('load', () => {
     U.G = parseInt((e.target as HTMLInputElement).value)
   })
 
-  filenameInput.addEventListener('filename', (e) => {
+  filenameInput.addEventListener('input', (e) => {
     filename = (e.target as HTMLInputElement).value;
   })
 
@@ -436,21 +482,44 @@ window.addEventListener('load', () => {
     }
   }
 
+  function switchMode(nextMode: ModeType) {
+    mode = nextMode;
+    switch (mode) {
+      case "pan":
+        document.getElementById("canvas")
+          .style.cursor = 'url("data:image/svg+xml;base64,' +
+          window.btoa(panBtn.innerHTML.trim()) + '") 12 12,auto';
+        break;
+      case "add":
+        document.getElementById('canvas').style.cursor = "none";
+        break;
+      case "selection":
+        document.getElementById('canvas').style.cursor = "default";
+        break;
+    }
+    updateInfoBar();
+  }
+
   window.addEventListener('keydown', (e) => {
-    console.log(e)
     if (e.key === " " || e.code === "Space") {
       pausePlay();
     } else if (e.key === "h" || e.code === "H") {
-      mode = "pan"
+      switchMode("pan")
     } else if (e.key === "p" || e.code === "P") {
-      mode = "add"
+      switchMode("add");
+    } else if (e.key === "c" || e.code === "C") {
+      U.clear();
     } else if (e.ctrlKey && (e.key === "z" || e.code === "Z")) {
+      e.preventDefault();
       undo();
     } else if (e.ctrlKey && (e.key === "y" || e.code === "Y")) {
+      e.preventDefault();
       redo();
     } else if (e.ctrlKey && (e.key === "s" || e.code === "S")) {
       e.preventDefault();
       save();
+    } else if (e.key === "s" || e.code === "S") {
+      switchMode("selection");
     } else if (e.ctrlKey && (e.key === "m" || e.code === "M")) {
       e.preventDefault();
       newFile();
@@ -459,26 +528,13 @@ window.addEventListener('load', () => {
     }
   });
 
-  function changeCursorToSVG(svg: string) {
-    document.getElementById("canvas").style.cursor = 'url("data:image/svg+xml;base64,' + window.btoa(svg.trim()) + '"),auto'
-  }
-
   playPauseBtn.addEventListener('click', pausePlay);
-  addBtn.addEventListener('click', () => {
-    mode = "add"
-    document.getElementById('canvas').style.cursor = "none";
-  });
-  panBtn.addEventListener('click', () => {
-    mode = "pan"
-    changeCursorToSVG(panBtn.innerHTML);
-  });
-  changeCursorToSVG(panBtn.innerHTML);
+  addBtn.addEventListener('click', () => switchMode("add"));
+  panBtn.addEventListener('click', () => switchMode("pan"));
   clearBtn.addEventListener('click', () => { U.clear(); updateInfoBar(); bodyToFollow = null });
-  selectBtn.addEventListener('click', () => {
-    mode = "selection"
-    document.getElementById('canvas').style.cursor = "default";
-  });
+  selectBtn.addEventListener('click', () => switchMode("selection"));
 
+  switchMode("pan");
 
   // Canvas zoon and pan
   canvas.addEventListener('mousedown', (e) => { if (!isTouchDevice) { onPointerDown(e) }});

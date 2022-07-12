@@ -3,9 +3,11 @@
 ## 1.3.0
 
 - Added menu bar
-- * Added saving and loading simulations
-- * Added select and delete body tool
-- * Added help and about
+- Added saving and loading simulations
+- Added select and delete body tool
+- Added about
+- Added few more shortcut keys
+- Improved Performance
 
 ## 1.2.0
 

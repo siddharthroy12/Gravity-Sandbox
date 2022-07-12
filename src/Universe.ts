@@ -14,8 +14,6 @@ type History = {
 export default class Universe {
   bodies: Body[] = [];
   previousPlacedCoords = {};
-  lastAddedBody = [];
-  lastRemovedBody = [];
   undoHistory: History[] = [];
   redoHistory: History[] = [];
   selectedBodies = new WeakMap<Body, boolean>();
@@ -162,7 +160,19 @@ export default class Universe {
 
   loadStateFromJSON(json: string) {
     const state = JSON.parse(json);
-    this.bodies = state.bodies;
+    this.bodies = [];
+
+    state.bodies.forEach((body:Body) => {
+      const newBody = new Body(body.mass, body.color);
+      newBody.velocity.x = body.velocity.x;
+      newBody.velocity.y = body.velocity.y;
+      newBody.previousStates = body.previousStates;
+      this.addBody(newBody, body.position.x, body.position.y);
+    })
+
+    this.redoHistory = [];
+    this.undoHistory = [];
+
     this.G = state.G;
   }
 }

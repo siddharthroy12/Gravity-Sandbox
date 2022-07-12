@@ -21,7 +21,12 @@
         File
         <ul class="menu__list">
           <li id="new">New<span class="shortcut">CTRL+M</span></li>
-          <li id="open">Open</li>
+          <li id="open">
+            Open
+            <ul class="sub-menu__list">
+              <li class="disabled">Empty</li>
+            </ul>
+          </li>
           <li id="save">Save<span class="shortcut">CTRL+S</span></li>
         </ul>
       </div>
@@ -30,14 +35,11 @@
         <ul class="menu__list">
           <li id="undo">Undo<span class="shortcut">CTRL+Z</span></li>
           <li id="redo">Redo<span class="shortcut">CTRL+Y</span></li>
-          <li id="redo">Delete Selected<span class="shortcut">Delete</span></li>
+          <li id="delete">Delete Selected<span class="shortcut">Delete</span></li>
         </ul>
       </div>
-      <div class="menu">
+      <div class="menu" id="about">
         About
-      </div>
-      <div class="menu">
-        Help
       </div>
       <input type="text" id="filename" oninput="this.size = this.value.length" value="Untitled" size="8">
     </div>
@@ -69,7 +71,6 @@
         </div>
       </div>
     </div>
-
     <div class="sliders-container">
       <div class="sliders">
         <div class="slider">
@@ -92,12 +93,42 @@
         </div>
       </div>
     </div>
+    <div class="window hidden" id="about-window">
+      <span class="close-btn">Close</span>
+      <h2 style="text-align: center;">Gravity Sandbox</h2>
+      <p>
+        Gravity Sandbox is a fun toy/game where you can play with Newtonian Gravity
+        by placing heavy objects in patterns and see intersting results.
+      </p>
+      <h3>Controls</h3>
+      <p>
+        On the left side there are 5 buttons for Play/Pause, Place Mode, Pan Mode, Selection Mode,
+        Clear All, and Load Presets.
+      </p>
+      <p>
+        On the right side the <code>Mass</code> and <code>Color</code> properties are for
+        new bodies and <code>Speed</code> and <code>Gravity</code> are for simulation.
+      </p>
+      <h3>Shortcuts</h3>
+      <ul>
+        <li>Pause/Play: <code>space</code></li>
+        <li>Place Mode: <code>p</code></li>
+        <li>Pan Mode: <code>h</code></li>
+        <li>Selection Mode: <code>s</code></li>
+        <li>Clear All: <code>c</code></li>
+        <li>Undo: <code>CTRL + Z</code></li>
+        <li>Redo: <code>CTRL + Y</code></li>
+        <li>Delete Selection: <code>delete</code></li>
+        <li>New File: <code>CTRL + M</code></li>
+        <li>Save File: <code>CTRL + S</code></li>
+      </ul>
+    </div>
     <div class="info-bar" id="info-bar"></div>
     <div class="links">
       <a href="https://github.com/siddharthroy12/Gravity-Sandbox" target="_blank">Source Code</a> |
       <a href="https://twitter.com/reactoverflow" target="_blank">Author</a> |
       <a href="https://github.com/siddharthroy12/Gravity-Sandbox/issues" target="_blank">Report a bug</a> |
-      <span>Version 1.3.1</span>
+      <span>Version 1.3.0</span>
     </div>
     <script type="module" src="/src/main.ts"></script>
   </body>
