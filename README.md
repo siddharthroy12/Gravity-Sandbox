@@ -18,17 +18,28 @@
 </div>
 
 
-![Screenshot](./screenshots/screenshot1.png)
+![Screenshot](./screenshots/screenshot.png)
 
-Gravity sandbox is a simple gravity simulator based on Newton's law of universal
-gravitation.
+Gravity Sandbox is a fun toy/game where you can play with Newtonian Gravity. Place heavy objects in patterns and see interesting results.
 
-It's a web-based simulation so no need to install anything, just visit
+It's a web app so no need to install anything, just visit
 [the website](https://gravity-sandbox.netlify.app/) to play the game
 
 ## Controls
 
-- ![play/pause button](./screenshots/play-pause-btn.png) To play and pause
-- ![pan/place button](./screenshots/pan-place-btn.png) To Pan/Place Mode
-- ![clear button](./screenshots/clear-btn.png) To clear the canvas
-- Click on the body while in pan mode to follow
+On the left side, there are 5 buttons for Play/Pause, Place Mode, Pan Mode, Selection Mode, Clear All, and Load Presets.
+
+On the right side, the `Mass` and `Color` properties are for new bodies and `Speed` and `Gravity` are for simulation.
+
+## Shortcuts
+
+- Pause/Play: `space`
+- Place Mode: `p`
+- Pan Mode: `h`
+- Selection Mode: `s`
+- Clear `All: c`
+- Undo: `CTRL + Z`
+- Redo: `CTRL + Y`
+- Delete Selection: `delete`
+- New File: `CTRL + M`
+- Save File: `CTRL + S`

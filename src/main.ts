@@ -509,6 +509,7 @@ window.addEventListener('load', () => {
       switchMode("add");
     } else if (e.key === "c" || e.code === "C") {
       U.clear();
+      updateInfoBar();
     } else if (e.ctrlKey && (e.key === "z" || e.code === "Z")) {
       e.preventDefault();
       undo();

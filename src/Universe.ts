@@ -111,6 +111,7 @@ export default class Universe {
   }
 
   clear() {
+    this.undoHistory.push({type: "delete", bodies:this.bodies})
     this.bodies = [];
     this.previousPlacedCoords = {};
   }
