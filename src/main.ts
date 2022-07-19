@@ -154,12 +154,12 @@ function draw() {
 
 // Gets the relevant location from a mouse or single touch event
 function getEventLocation(e: TouchEvent|MouseEvent) {
-  if (e instanceof TouchEvent) {
+  if (window.TouchEvent && e instanceof TouchEvent) {
     if (e.touches && e.touches.length == 1) {
       return { x:e.touches[0].clientX, y: e.touches[0].clientY }
     }
   } else {
-    return { x: e.clientX, y: e.clientY }
+    return { x: (e as MouseEvent).clientX, y: (e as MouseEvent).clientY }
   }
 }
 
