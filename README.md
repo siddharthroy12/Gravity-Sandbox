@@ -1,6 +1,6 @@
 <div align="center">
   <a href="https://gravity-sandbox.netlify.app/">
-    <img src="screenshots/logo.png" alt="Logo" width="80" height="80">
+    <img src="https://github.com/siddharthroy12/Gravity-Sandbox/raw/main/screenshots/logo.png" alt="Logo" width="80" height="80">
   </a>
 
   <h3 align="center">Gravity Sandbox</h3>
@@ -18,7 +18,7 @@
 </div>
 
 
-![Screenshot](./screenshots/screenshot.png)
+![Screenshot](https://github.com/siddharthroy12/Gravity-Sandbox/raw/main/screenshots/screenshot.png)
 
 Gravity Sandbox is a fun toy/game where you can play with Newtonian Gravity. Place heavy objects in patterns and see interesting results.
 
